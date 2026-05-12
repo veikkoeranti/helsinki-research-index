@@ -41,8 +41,7 @@ at least once.
 > Add a route `GET /neighbourhood/{id}` to `app/main.py` and a template
 > `app/templates/neighbourhood.html`.
 >
->When running scripts that modify data/index.db or other files in data/, do not use a worktree — work in the project's actual directory. The database is runtime state, not source code, and worktree copies of it create confusion. If you've already done work in a worktree that modified data files, merge those data files back to the project root before finishing.
-
+>
 > The page should show:
 > - The neighbourhood name (Finnish + Swedish), major district, and a
 >   small Leaflet map centred on its coordinates with a single pin
@@ -169,3 +168,23 @@ at least once.
 - Adding new database tables without asking
 - Concept extraction beyond what OpenAlex provides — defer until corpus is curated
 - Bilingual UI — English only for now (the underlying data is already bilingual)
+
+## Pending changes to upstream pipeline (do these BEFORE next full re-ingest)
+
+### Add journal name to ingestion
+
+OpenAlex returns the journal/venue as `primary_location.source.display_name`
+on each work. This isn't currently extracted.
+
+Changes needed:
+1. `extraction-pipeline/extract_pilot_v2.py` — add `primary_location` to the
+   `select` field of the OpenAlex query, and capture
+   `paper.get("primary_location", {}).get("source", {}).get("display_name")`
+   into the output record as `journal`.
+2. `scripts/schema.sql` — add a column `journal TEXT` to the `paper` table.
+   Write a migration that adds it via `ALTER TABLE paper ADD COLUMN journal TEXT`.
+3. `scripts/ingest.py` — include `journal` in the UPSERT.
+4. `app/templates/paper.html` and `app/templates/neighbourhood.html` — show
+   journal alongside year and author.
+
+Order matters: schema change first, then ingest, then templates.
