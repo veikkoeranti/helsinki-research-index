@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Helsinki Research Index{% endblock %}</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Geist:wght@300..700&display=swap">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell">
+      <a href="/" class="site-title">Helsinki <em>Research Index</em></a>
+      <nav class="site-nav">
+        <a href="/">Neighbourhoods</a>
+        <a href="/map">Map</a>
+        <a href="/papers">All papers</a>
+      </nav>
+    </div>
+  </header>
+  <main class="shell">{% block body %}{% endblock %}</main>
+</body>
+</html>

@@ -1,0 +1,24 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Claude Code internal state
+.claude/
+
+# Local database (rebuilt from extracted.json + editorial_decisions.json)
+data/index.db
+
+# Extraction outputs (regenerate as needed)
+data/extracted.json
+extraction-pipeline/extracted.json
+extraction-pipeline/corpus_estimate.json
+extraction-pipeline/extracted_for_review.csv
+
+# Zip files and other debris
+*.zip
+files/

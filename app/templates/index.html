@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="article-header">
+  <p class="eyebrow">v1 / local</p>
+  <h1>Research about <em>Helsinki neighbourhoods</em></h1>
+  <p class="lede">An index of academic publications mapped to Helsinki's 60 official boroughs (kaupunginosat) and selected sub-districts. Counts reflect papers after editorial exclusion.</p>
+</header>
+
+<table class="matrix">
+  <thead>
+    <tr><th>Neighbourhood</th><th>Swedish</th><th>Major district</th><th style="text-align: right;">Papers</th></tr>
+  </thead>
+  <tbody>
+    {% for n in neighbourhoods %}
+    <tr>
+      <td class="row-head">
+        <a href="/neighbourhood/{{ n.id }}">{{ n.name_fi }}{% if n.is_quarter %} <span style="color: var(--color-ink-muted); font-size: 0.85em;">(quarter)</span>{% endif %}</a>
+      </td>
+      <td style="color: var(--color-ink-muted);">{{ n.name_sv or '—' }}</td>
+      <td>{{ n.major_district }}</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">{{ n.paper_count or '—' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
