@@ -257,6 +257,44 @@ def mapping_add(short_id: str, neighbourhood_id: str = Form(...)):
     return RedirectResponse(f"/paper/{short_id}", status_code=303)
 
 
+@app.get("/map", response_class=HTMLResponse)
+def map_view(request: Request, show_empty: int = 0):
+    """Single Leaflet map with one CircleMarker per neighbourhood."""
+    with get_conn() as conn:
+        rows = conn.execute(
+            """
+            SELECT
+              n.id, n.name_fi, n.lat, n.lng, n.is_quarter,
+              COUNT(DISTINCT CASE
+                WHEN pn.user_excluded = 0 AND p.user_excluded = 0
+                THEN pn.paper_id
+              END) AS paper_count
+            FROM neighbourhood n
+            LEFT JOIN paper_neighbourhood pn ON pn.neighbourhood_id = n.id
+            LEFT JOIN paper p ON p.openalex_id = pn.paper_id
+            GROUP BY n.id
+            """
+        ).fetchall()
+
+    points = [
+        {
+            "id": r["id"],
+            "name_fi": r["name_fi"],
+            "lat": r["lat"],
+            "lng": r["lng"],
+            "is_quarter": bool(r["is_quarter"]),
+            "paper_count": r["paper_count"],
+        }
+        for r in rows
+        if show_empty or r["paper_count"] > 0
+    ]
+    return templates.TemplateResponse(
+        request,
+        "map.html",
+        {"points": points, "show_empty": bool(show_empty)},
+    )
+
+
 @app.get("/healthz")
 def healthz():
     return {"ok": True}

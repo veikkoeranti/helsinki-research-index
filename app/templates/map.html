@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Map — Helsinki Research Index{% endblock %}
+{% block body %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<header class="article-header">
+  <p class="eyebrow">map view</p>
+  <h1>Helsinki <em>by neighbourhood</em></h1>
+  <p class="lede">
+    {{ points|length }} neighbourhood{{ '' if points|length == 1 else 's' }} shown.
+    Pin size scales with paper count (after exclusions).
+    {% if show_empty %}
+      <a href="/map">hide empty</a>
+    {% else %}
+      <a href="/map?show_empty=1">show empty neighbourhoods</a>
+    {% endif %}
+  </p>
+</header>
+
+<div id="map" style="height: 70vh; margin-bottom: 2rem; border: 1px solid var(--color-rule, #ddd);"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  (function () {
+    var points = {{ points|tojson }};
+    var accent = getComputedStyle(document.documentElement)
+      .getPropertyValue('--color-accent').trim() || '#00256b';
+
+    var map = L.map('map').setView([60.192, 24.945], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap',
+      maxZoom: 19
+    }).addTo(map);
+
+    points.forEach(function (p) {
+      var radius = 4 + Math.sqrt(p.paper_count);
+      var marker = L.circleMarker([p.lat, p.lng], {
+        radius: radius,
+        color: accent,
+        weight: 1,
+        fillColor: accent,
+        fillOpacity: p.paper_count > 0 ? 0.6 : 0.15
+      }).addTo(map);
+
+      var quarter = p.is_quarter ? ' <em style="color:#888">(quarter)</em>' : '';
+      marker.bindPopup(
+        '<strong>' + p.name_fi + '</strong>' + quarter + '<br>' +
+        p.paper_count + ' paper' + (p.paper_count === 1 ? '' : 's') + '<br>' +
+        '<a href="/neighbourhood/' + encodeURIComponent(p.id) + '">open detail page →</a>'
+      );
+    });
+  })();
+</script>
+{% endblock %}
