@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}{{ paper.title }} — Helsinki Research Index{% endblock %}
+{% block body %}
+
+<header class="article-header">
+  <p class="eyebrow">
+    {{ paper.year or '—' }}{% if paper.first_author %} · {{ paper.first_author }}{% endif %}
+    {% if paper.openalex_topic %} · {{ paper.openalex_topic }}{% endif %}
+  </p>
+  <h1{% if paper.user_excluded %} style="opacity: 0.5;"{% endif %}>{{ paper.title }}</h1>
+  <p class="lede">
+    <a href="{{ paper.openalex_id }}" target="_blank" rel="noopener">OpenAlex</a>
+    {% if paper.doi %}
+      · <a href="{{ paper.doi }}" target="_blank" rel="noopener">DOI</a>
+    {% endif %}
+    {% if paper.language %} · {{ paper.language }}{% endif %}
+  </p>
+</header>
+
+<section style="margin-bottom: 2rem;">
+  <h2>Abstract</h2>
+  {% if paper.abstract %}
+    <p>{{ paper.abstract }}</p>
+  {% else %}
+    <p style="color: var(--color-ink-muted);">No abstract available.</p>
+  {% endif %}
+</section>
+
+<section style="margin-bottom: 2rem;">
+  <h2>Metadata</h2>
+  <table class="matrix">
+    <tbody>
+      <tr><th>OpenAlex field</th><td>{{ paper.openalex_field or '—' }}</td></tr>
+      <tr><th>OpenAlex topic</th><td>{{ paper.openalex_topic or '—' }}</td></tr>
+      <tr><th>OpenAlex keywords</th><td>
+        {% if openalex_keywords %}{{ openalex_keywords|join(', ') }}{% else %}—{% endif %}
+      </td></tr>
+      <tr><th>Extracted scale</th><td>{{ paper.extracted_scale or '—' }}</td></tr>
+      <tr><th>Extracted discipline</th><td>{{ paper.extracted_discipline or '—' }}</td></tr>
+      <tr><th>Extracted concepts</th><td>
+        {% if extracted_concepts %}{{ extracted_concepts|join(', ') }}{% else %}—{% endif %}
+      </td></tr>
+      <tr><th>About Helsinki?</th><td>
+        {% if paper.is_about_helsinki == 1 %}yes{% elif paper.is_about_helsinki == 0 %}no{% else %}—{% endif %}
+      </td></tr>
+      <tr><th>Confidence notes</th><td>{{ paper.confidence_notes or '—' }}</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section style="margin-bottom: 2rem;">
+  <h2>Mapped neighbourhoods</h2>
+  {% if mappings %}
+    <p style="color: var(--color-ink-muted); font-size: 0.9em;">
+      Uncheck "this paper IS about this area" to exclude a false-positive mapping.
+    </p>
+    <ul style="list-style: none; padding-left: 0;">
+      {% for m in mappings %}
+        {% include "_mapping_row.html" %}
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p style="color: var(--color-ink-muted);">No neighbourhood mappings yet.</p>
+  {% endif %}
+
+  <form action="/paper/{{ short_id }}/mapping/add" method="post" style="margin-top: 1rem;">
+    <label>
+      Add another neighbourhood:
+      <select name="neighbourhood_id" required>
+        <option value="">— pick one —</option>
+        {% for n in available_neighbourhoods %}
+          <option value="{{ n.id }}">{{ n.name_fi }}{% if n.is_quarter %} (quarter){% endif %}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <button type="submit">Add</button>
+  </form>
+</section>
+
+<section style="margin-bottom: 2rem;">
+  <h2>Editorial</h2>
+  <form action="/paper/{{ short_id }}/exclude" method="post" style="margin-bottom: 1rem;">
+    <button type="submit">
+      {% if paper.user_excluded %}Un-exclude this paper{% else %}Exclude this paper from corpus{% endif %}
+    </button>
+    <span style="color: var(--color-ink-muted); font-size: 0.9em;">
+      currently: {% if paper.user_excluded %}excluded{% else %}included{% endif %}
+    </span>
+  </form>
+
+  <form action="/paper/{{ short_id }}/notes" method="post">
+    <label style="display: block;">
+      Notes:
+      <textarea name="user_notes" rows="4" style="display: block; width: 100%; max-width: 40rem;">{{ paper.user_notes or '' }}</textarea>
+    </label>
+    <button type="submit">Save notes</button>
+  </form>
+</section>
+
+{% endblock %}

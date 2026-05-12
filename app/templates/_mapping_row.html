@@ -1,0 +1,14 @@
+<li id="mapping-{{ m.neighbourhood_id }}" style="margin-bottom: 0.4rem;{% if m.user_excluded %} opacity: 0.5;{% endif %}">
+  <label style="cursor: pointer;">
+    <input
+      type="checkbox"
+      {% if not m.user_excluded %}checked{% endif %}
+      hx-post="/paper/{{ short_id }}/mapping/{{ m.neighbourhood_id }}/exclude"
+      hx-target="closest li"
+      hx-swap="outerHTML">
+    <a href="/neighbourhood/{{ m.neighbourhood_id }}">{{ m.name_fi }}</a>
+    <span style="color: var(--color-ink-muted); font-size: 0.85em;">
+      ({{ m.source }}{% if m.user_added %}, user-added{% endif %})
+    </span>
+  </label>
+</li>

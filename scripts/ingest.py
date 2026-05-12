@@ -26,10 +26,10 @@ PAPER_INSERT = """
 INSERT INTO paper (
     openalex_id, doi, title, abstract, year, first_author,
     authors_json, language, openalex_field, openalex_topic,
-    openalex_keywords_json,
+    openalex_keywords_json, journal,
     extracted_scale, extracted_concepts_json, extracted_discipline,
     is_about_helsinki, confidence_notes
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT(openalex_id) DO UPDATE SET
     doi=excluded.doi,
     title=excluded.title,
@@ -41,6 +41,7 @@ ON CONFLICT(openalex_id) DO UPDATE SET
     openalex_field=excluded.openalex_field,
     openalex_topic=excluded.openalex_topic,
     openalex_keywords_json=excluded.openalex_keywords_json,
+    journal=excluded.journal,
     extracted_scale=excluded.extracted_scale,
     extracted_concepts_json=excluded.extracted_concepts_json,
     extracted_discipline=excluded.extracted_discipline,
@@ -113,6 +114,7 @@ def main() -> None:
                 rec.get("openalex_field"),
                 rec.get("openalex_primary_topic") or rec.get("openalex_topic"),
                 json.dumps(rec.get("openalex_keywords")) if rec.get("openalex_keywords") is not None else None,
+                rec.get("journal") or rec.get("venue"),
                 extracted.get("scale"),
                 json.dumps(extracted.get("concepts")) if extracted.get("concepts") is not None else None,
                 extracted.get("discipline"),

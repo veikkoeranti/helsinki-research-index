@@ -34,6 +34,7 @@ CREATE TABLE paper (
     openalex_field  TEXT,
     openalex_topic  TEXT,
     openalex_keywords_json TEXT,             -- list of strings as JSON
+    journal         TEXT,                    -- venue/journal display name
 
     -- Extraction outputs from Haiku
     extracted_scale         TEXT,            -- neighbourhood | city | region | nordic | international

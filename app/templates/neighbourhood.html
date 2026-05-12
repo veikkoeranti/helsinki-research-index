@@ -28,23 +28,32 @@
       <th>Author</th>
       <th style="text-align: right;">Year</th>
       <th>OpenAlex topic</th>
+      <th>Journal</th>
     </tr>
   </thead>
   <tbody>
     {% for p in papers %}
+    {% set short_id = p.openalex_id.split('/')[-1] %}
     <tr{% if p.paper_excluded or p.mapping_excluded %} style="opacity: 0.5;"{% endif %}>
       <td class="row-head">
-        <a href="{% if p.doi %}{{ p.doi }}{% else %}{{ p.openalex_id }}{% endif %}" target="_blank" rel="noopener">{{ p.title }}</a>
+        <a href="/paper/{{ short_id }}">{{ p.title }}</a>
         {% if p.abstract %}
         <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
           {{ p.abstract|truncate(250, true, '…') }}
-          <a href="/paper/{{ p.openalex_id.split('/')[-1] }}">read more</a>
+          <strong><a href="{{ p.openalex_id }}" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          {% if p.doi %}
+            <strong><a href="{{ p.doi }}" target="_blank" rel="noopener">journal</a></strong>
+          {% else %}
+            <span title="no DOI on file">journal</span>
+          {% endif %}
         </div>
         {% endif %}
       </td>
       <td style="color: var(--color-ink-muted);">{{ p.first_author or '—' }}</td>
       <td style="text-align: right; font-variant-numeric: tabular-nums;">{{ p.year or '—' }}</td>
       <td style="color: var(--color-ink-muted);">{{ p.openalex_topic or '—' }}</td>
+      <td style="color: var(--color-ink-muted);">{{ p.journal or '—' }}</td>
     </tr>
     {% endfor %}
   </tbody>
