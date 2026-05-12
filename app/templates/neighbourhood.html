@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}{{ nbhd.name_fi }} — Helsinki Research Index{% endblock %}
+{% block body %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<header class="article-header">
+  <p class="eyebrow">
+    {{ nbhd.major_district or '—' }}{% if nbhd.is_quarter %} · quarter{% endif %}
+  </p>
+  <h1>{{ nbhd.name_fi }}{% if nbhd.name_sv and nbhd.name_sv != nbhd.name_fi %} <em>/ {{ nbhd.name_sv }}</em>{% endif %}</h1>
+  <p class="lede">
+    {{ papers|length }} paper{{ '' if papers|length == 1 else 's' }} mapped to this area{% if show_excluded %} (including excluded){% endif %}.
+    {% if show_excluded %}
+      <a href="/neighbourhood/{{ nbhd.id }}">hide excluded</a>
+    {% else %}
+      <a href="/neighbourhood/{{ nbhd.id }}?show_excluded=1">show excluded</a>
+    {% endif %}
+  </p>
+</header>
+
+<div id="map" style="height: 280px; margin-bottom: 2rem; border: 1px solid var(--color-rule, #ddd);"></div>
+
+{% if papers %}
+<table class="matrix">
+  <thead>
+    <tr>
+      <th>Paper</th>
+      <th>Author</th>
+      <th style="text-align: right;">Year</th>
+      <th>OpenAlex topic</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in papers %}
+    <tr{% if p.paper_excluded or p.mapping_excluded %} style="opacity: 0.5;"{% endif %}>
+      <td class="row-head">
+        <a href="{% if p.doi %}{{ p.doi }}{% else %}{{ p.openalex_id }}{% endif %}" target="_blank" rel="noopener">{{ p.title }}</a>
+        {% if p.abstract %}
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          {{ p.abstract|truncate(250, true, '…') }}
+          <a href="/paper/{{ p.openalex_id.split('/')[-1] }}">read more</a>
+        </div>
+        {% endif %}
+      </td>
+      <td style="color: var(--color-ink-muted);">{{ p.first_author or '—' }}</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">{{ p.year or '—' }}</td>
+      <td style="color: var(--color-ink-muted);">{{ p.openalex_topic or '—' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="lede">No papers mapped to this area yet.</p>
+{% endif %}
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  (function () {
+    var map = L.map('map', { scrollWheelZoom: false }).setView([{{ nbhd.lat }}, {{ nbhd.lng }}], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap',
+      maxZoom: 19
+    }).addTo(map);
+    L.marker([{{ nbhd.lat }}, {{ nbhd.lng }}]).addTo(map)
+      .bindPopup({{ nbhd.name_fi|tojson }});
+  })();
+</script>
+{% endblock %}
