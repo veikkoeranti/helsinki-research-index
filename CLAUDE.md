@@ -50,3 +50,6 @@ mappings; always set `user_excluded = 1` instead.
 - Changing the visual design or the CSS file
 - Adding new dependencies to requirements.txt
 - Anything that would touch the deploy/export pipeline (when that exists)
+
+When running scripts that modify data/index.db or other files in data/, do not use a worktree — work in the project's actual directory. The database is runtime state, not source code, and worktree copies of it create confusion. If you've already done work in a worktree that modified data files, merge those data files back to the project root before finishing.
+

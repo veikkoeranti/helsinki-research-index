@@ -24,8 +24,7 @@ at least once.
 > that don't resolve (log them to stderr so we can fix the gazetteer).
 >
 > The script should be idempotent — re-running it with the same input
-> should produce the same DB state, not duplicates. Use `INSERT OR REPLACE`
-> for papers and `INSERT OR IGNORE` for mappings.
+> should produce the same DB state, not duplicates. Use INSERT ... ON CONFLICT(openalex_id) DO UPDATE for papers — never INSERT OR REPLACE, because the CASCADE on paper_neighbourhood would silently wipe editorial flags every re-ingest. Use INSERT OR IGNORE for mappings (where the CASCADE issue doesn't apply, since mappings are leaf rows).
 >
 > Take the input path as a command-line argument. Print a summary at the
 > end: papers inserted, mappings inserted, neighbourhood names that
@@ -42,6 +41,8 @@ at least once.
 > Add a route `GET /neighbourhood/{id}` to `app/main.py` and a template
 > `app/templates/neighbourhood.html`.
 >
+>When running scripts that modify data/index.db or other files in data/, do not use a worktree — work in the project's actual directory. The database is runtime state, not source code, and worktree copies of it create confusion. If you've already done work in a worktree that modified data files, merge those data files back to the project root before finishing.
+
 > The page should show:
 > - The neighbourhood name (Finnish + Swedish), major district, and a
 >   small Leaflet map centred on its coordinates with a single pin
