@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Topics — Helsinki Research Index{% endblock %}
+{% block body %}
+<header class="article-header">
+  <p class="eyebrow">OpenAlex topics</p>
+  <h1>Research <em>by topic</em></h1>
+  <p class="lede">
+    {{ topics|length }} distinct topic{{ '' if topics|length == 1 else 's' }} across non-excluded papers.
+    Topic labels come from OpenAlex's primary-topic classification.
+  </p>
+</header>
+
+{% if topics %}
+<section style="margin-bottom: 2.5rem;">
+  <h2 style="font-family: 'Fraunces', serif;">Most common</h2>
+  <ul style="list-style: none; padding-left: 0; font-size: 1.1em;">
+    {% for t in topics[:prominent_n] %}
+    <li style="margin-bottom: 0.5rem;">
+      <a href="/topic/{{ t.topic|urlencode }}"><strong>{{ t.topic }}</strong></a>
+      <span style="color: var(--color-ink-muted);"> — {{ t.paper_count }} paper{{ '' if t.paper_count == 1 else 's' }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+{% if topics|length > prominent_n %}
+<section>
+  <h2 style="font-family: 'Fraunces', serif;">All topics</h2>
+  <table class="matrix">
+    <thead>
+      <tr>
+        <th>Topic</th>
+        <th style="text-align: right;">Papers</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in topics[prominent_n:] %}
+      <tr>
+        <td class="row-head">
+          <a href="/topic/{{ t.topic|urlencode }}">{{ t.topic }}</a>
+        </td>
+        <td style="text-align: right; font-variant-numeric: tabular-nums;">{{ t.paper_count }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+{% else %}
+<p class="lede">No topics on file yet.</p>
+{% endif %}
+{% endblock %}

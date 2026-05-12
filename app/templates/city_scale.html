@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}City-scale papers — Helsinki Research Index{% endblock %}
+{% block body %}
+
+{% macro sort_link(label, key) -%}
+  {% set qs = '?sort=' ~ key ~ ('&scale=' ~ scale_filter if scale_filter else '') %}
+  {% if sort == key %}
+    <a href="{{ qs }}"><strong>{{ label }} ↓</strong></a>
+  {% else %}
+    <a href="{{ qs }}">{{ label }}</a>
+  {% endif %}
+{%- endmacro %}
+
+<header class="article-header">
+  <p class="eyebrow">above neighbourhood scale</p>
+  <h1>City-scale <em>papers</em></h1>
+  <p class="lede">
+    Research about Helsinki that operates at city, regional, Nordic, or
+    international scale — these can't be pinned to a neighbourhood, so
+    they don't appear on the map. {{ papers|length }} shown.
+  </p>
+</header>
+
+<section style="margin-bottom: 1.5rem;">
+  <strong>Filter by scale:</strong>
+  {% set base_qs = '?sort=' ~ sort %}
+  {% if scale_filter %}
+    <a href="{{ base_qs }}">all</a>
+  {% else %}
+    <strong>all</strong>
+  {% endif %}
+  {% for s in scales %}
+    ·
+    {% if scale_filter == s %}
+      <strong>{{ s }} ({{ counts.get(s, 0) }})</strong>
+    {% else %}
+      <a href="{{ base_qs }}&scale={{ s }}">{{ s }} ({{ counts.get(s, 0) }})</a>
+    {% endif %}
+  {% endfor %}
+</section>
+
+{% if papers %}
+<table class="matrix">
+  <thead>
+    <tr>
+      <th>Paper</th>
+      <th>{{ sort_link('Author', 'author') }}</th>
+      <th style="text-align: right;">{{ sort_link('Year', 'year_desc' if sort != 'year_desc' else 'year_asc') }}</th>
+      <th>{{ sort_link('Scale', 'scale') }}</th>
+      <th>Journal</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in papers %}
+    {% set short_id = p.openalex_id.split('/')[-1] %}
+    <tr>
+      <td class="row-head">
+        <a href="/paper/{{ short_id }}">{{ p.title }}</a>
+        {% if p.abstract %}
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          {{ p.abstract|truncate(250, true, '…') }}
+          <strong><a href="{{ p.openalex_id }}" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          {% if p.doi %}
+            <strong><a href="{{ p.doi }}" target="_blank" rel="noopener">journal</a></strong>
+          {% else %}
+            <span title="no DOI on file">journal</span>
+          {% endif %}
+        </div>
+        {% endif %}
+      </td>
+      <td style="color: var(--color-ink-muted);">{{ p.first_author or '—' }}</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">{{ p.year or '—' }}</td>
+      <td style="color: var(--color-ink-muted);">{{ p.extracted_scale }}</td>
+      <td style="color: var(--color-ink-muted);">{{ p.journal or '—' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="lede">No papers match this filter.</p>
+{% endif %}
+{% endblock %}

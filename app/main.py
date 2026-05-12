@@ -257,6 +257,152 @@ def mapping_add(short_id: str, neighbourhood_id: str = Form(...)):
     return RedirectResponse(f"/paper/{short_id}", status_code=303)
 
 
+CITY_SCALE_VALUES = ("city", "region", "nordic", "international")
+CITY_SCALE_SORTS = {
+    "year_desc": "p.year DESC NULLS LAST, p.title",
+    "year_asc":  "p.year ASC NULLS LAST, p.title",
+    "author":    "p.first_author COLLATE NOCASE, p.year DESC",
+    "scale":     "p.extracted_scale, p.year DESC",
+}
+
+
+@app.get("/city-scale", response_class=HTMLResponse)
+def city_scale(request: Request, scale: str = "", sort: str = "year_desc"):
+    """Papers above the neighbourhood scale — can't be pinned to a map."""
+    if sort not in CITY_SCALE_SORTS:
+        sort = "year_desc"
+    scale_filter = scale if scale in CITY_SCALE_VALUES else ""
+
+    with get_conn() as conn:
+        counts = dict(conn.execute(
+            f"""
+            SELECT extracted_scale, COUNT(*)
+            FROM paper
+            WHERE user_excluded = 0
+              AND is_about_helsinki = 1
+              AND extracted_scale IN ({','.join('?' * len(CITY_SCALE_VALUES))})
+            GROUP BY extracted_scale
+            """,
+            CITY_SCALE_VALUES,
+        ).fetchall())
+
+        params: list = list(CITY_SCALE_VALUES)
+        extra = ""
+        if scale_filter:
+            extra = "AND p.extracted_scale = ?"
+            params.append(scale_filter)
+
+        papers = conn.execute(
+            f"""
+            SELECT
+              p.openalex_id, p.doi, p.title, p.abstract, p.year,
+              p.first_author, p.journal, p.openalex_topic, p.extracted_scale
+            FROM paper p
+            WHERE p.user_excluded = 0
+              AND p.is_about_helsinki = 1
+              AND p.extracted_scale IN ({','.join('?' * len(CITY_SCALE_VALUES))})
+              {extra}
+            ORDER BY {CITY_SCALE_SORTS[sort]}
+            """,
+            params,
+        ).fetchall()
+
+    return templates.TemplateResponse(
+        request,
+        "city_scale.html",
+        {
+            "papers": papers,
+            "counts": counts,
+            "scales": CITY_SCALE_VALUES,
+            "scale_filter": scale_filter,
+            "sort": sort,
+        },
+    )
+
+
+@app.get("/topics", response_class=HTMLResponse)
+def topics_index(request: Request):
+    """List distinct OpenAlex topics with paper counts."""
+    with get_conn() as conn:
+        rows = conn.execute(
+            """
+            SELECT p.openalex_topic AS topic, COUNT(*) AS paper_count
+            FROM paper p
+            WHERE p.user_excluded = 0
+              AND p.openalex_topic IS NOT NULL
+              AND p.openalex_topic != ''
+            GROUP BY p.openalex_topic
+            ORDER BY paper_count DESC, p.openalex_topic
+            """
+        ).fetchall()
+    return templates.TemplateResponse(
+        request,
+        "topics.html",
+        {"topics": rows, "prominent_n": 8},
+    )
+
+
+@app.get("/topic/{topic_name}", response_class=HTMLResponse)
+def topic_detail(request: Request, topic_name: str):
+    """Papers under one OpenAlex topic + a map of their neighbourhoods."""
+    with get_conn() as conn:
+        papers = conn.execute(
+            """
+            SELECT
+              p.openalex_id, p.doi, p.title, p.abstract, p.year,
+              p.first_author, p.journal, p.openalex_topic,
+              p.user_excluded AS paper_excluded
+            FROM paper p
+            WHERE p.user_excluded = 0
+              AND p.openalex_topic = ?
+            ORDER BY p.year DESC NULLS LAST, p.title
+            """,
+            (topic_name,),
+        ).fetchall()
+
+        if not papers:
+            raise HTTPException(status_code=404, detail="topic not found")
+
+        nbhd_rows = conn.execute(
+            """
+            SELECT
+              n.id, n.name_fi, n.lat, n.lng, n.is_quarter,
+              COUNT(DISTINCT pn.paper_id) AS paper_count
+            FROM neighbourhood n
+            JOIN paper_neighbourhood pn ON pn.neighbourhood_id = n.id
+            JOIN paper p ON p.openalex_id = pn.paper_id
+            WHERE p.openalex_topic = ?
+              AND p.user_excluded = 0
+              AND pn.user_excluded = 0
+            GROUP BY n.id
+            HAVING paper_count > 0
+            ORDER BY paper_count DESC, n.name_fi
+            """,
+            (topic_name,),
+        ).fetchall()
+
+    points = [
+        {
+            "id": r["id"],
+            "name_fi": r["name_fi"],
+            "lat": r["lat"],
+            "lng": r["lng"],
+            "is_quarter": bool(r["is_quarter"]),
+            "paper_count": r["paper_count"],
+        }
+        for r in nbhd_rows
+    ]
+    return templates.TemplateResponse(
+        request,
+        "topic.html",
+        {
+            "topic_name": topic_name,
+            "papers": papers,
+            "points": points,
+        },
+    )
+
+
 @app.get("/map", response_class=HTMLResponse)
 def map_view(request: Request, show_empty: int = 0):
     """Single Leaflet map with one CircleMarker per neighbourhood."""
