@@ -22,7 +22,9 @@
    range zero-filled. `selected_year` may be None or one of the years.
    `link_for_year` is a single-arg callable (a Jinja macro) returning the
    href for clicking bar Y — each calling page builds it so the histogram
-   stays agnostic about which other filters are in play. #}
+   stays agnostic about which other filters are in play. Pass `none` for
+   `link_for_year` to render the bars as static SVG without anchors
+   (used by the static-site build, where ?year= filtering doesn't work). #}
 {% macro histogram(data, selected_year, link_for_year) -%}
   {% if data %}
     {% set y_min = data[0][0] %}
@@ -45,7 +47,7 @@
       {% set x_center = (vb_w / (span + 1)) * (loop.index0 + 0.5) %}
       {% set h = (n / max_count) * chart_h if max_count else 0 %}
       {% set is_sel = (selected_year == y) %}
-      <a href="{{ link_for_year(y) }}">
+      {% if link_for_year %}<a href="{{ link_for_year(y) }}">{% endif %}
         <title>{{ y }} — {{ n }} paper{{ '' if n == 1 else 's' }}</title>
         <rect x="{{ x_center - bar_w / 2 }}"
               y="{{ chart_h - h }}"
@@ -53,7 +55,7 @@
               height="{{ h }}"
               fill="{% if is_sel %}var(--color-accent-hot){% else %}var(--color-accent){% endif %}"
               fill-opacity="{% if selected_year is none or is_sel %}1{% else %}0.5{% endif %}"/>
-      </a>
+      {% if link_for_year %}</a>{% endif %}
     {% endfor %}
     <text x="0" y="{{ vb_h - 2 }}"
           font-family="var(--font-ui)" font-size="11"

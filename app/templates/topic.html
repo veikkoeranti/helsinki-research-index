@@ -10,7 +10,7 @@
 {% macro qs(year=None) -%}
   {%- set parts = [] -%}
   {%- if year is not none %}{% set _ = parts.append('year=' ~ year) %}{% endif -%}
-  /topic/{{ topic_name|urlencode }}{% if parts %}?{{ parts|join('&') }}{% endif -%}
+  {{ topic_url(topic_name) }}{% if parts %}?{{ parts|join('&') }}{% endif -%}
 {%- endmacro %}
 
 {% macro year_link(year) -%}{{ qs(year=year) }}{%- endmacro %}
@@ -31,7 +31,7 @@
 <section style="display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
                 gap: 2rem; margin-bottom: 1.5rem;">
-  {% if histogram_data %}<div>{{ histogram(histogram_data, selected_year, year_link) }}</div>{% endif %}
+  {% if histogram_data %}<div>{{ histogram(histogram_data, selected_year, none if static_build else year_link) }}</div>{% endif %}
   {% if nbhd_points %}
   <div>
     <p class="eyebrow">geographic distribution{% if selected_year is not none %} ({{ selected_year }}){% endif %}</p>
@@ -98,7 +98,7 @@
 <script>
   (function () {
     var points = {{ nbhd_points|tojson }};
-    var topicParam = {{ ('?topic=' + (topic_name|urlencode))|tojson }};
+    var topicParam = {{ ('' if static_build else ('?topic=' + (topic_name|urlencode)))|tojson }};
     var accent = getComputedStyle(document.documentElement)
       .getPropertyValue('--color-accent').trim() || '#00256b';
 

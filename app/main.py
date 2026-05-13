@@ -22,12 +22,16 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from app.template_helpers import topic_url_live
+
 ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "data" / "index.db"
 
 app = FastAPI(title="Helsinki Research Index")
 app.mount("/static", StaticFiles(directory=ROOT / "app" / "static"), name="static")
 templates = Jinja2Templates(directory=str(ROOT / "app" / "templates"))
+templates.env.globals["topic_url"] = topic_url_live
+templates.env.globals["static_build"] = False
 
 
 def get_conn() -> sqlite3.Connection:

@@ -27,10 +27,12 @@
   <h1>{{ nbhd.name_fi }}{% if nbhd.name_sv and nbhd.name_sv != nbhd.name_fi %} <em>/ {{ nbhd.name_sv }}</em>{% endif %}</h1>
   <p class="lede">
     {{ papers|length }} paper{{ '' if papers|length == 1 else 's' }} mapped to this area{% if show_excluded %} (including excluded){% endif %}.
-    {% if show_excluded %}
-      <a href="/neighbourhood/{{ nbhd.id }}">hide excluded</a>
-    {% else %}
-      <a href="/neighbourhood/{{ nbhd.id }}?show_excluded=1">show excluded</a>
+    {% if not static_build %}
+      {% if show_excluded %}
+        <a href="/neighbourhood/{{ nbhd.id }}">hide excluded</a>
+      {% else %}
+        <a href="/neighbourhood/{{ nbhd.id }}?show_excluded=1">show excluded</a>
+      {% endif %}
     {% endif %}
   </p>
   {% if selected_topic %}
@@ -47,7 +49,7 @@
 <section style="display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
                 gap: 2rem; margin-bottom: 1.5rem;">
-  {% if histogram_data %}<div>{{ histogram(histogram_data, selected_year, year_link) }}</div>{% endif %}
+  {% if histogram_data %}<div>{{ histogram(histogram_data, selected_year, none if static_build else year_link) }}</div>{% endif %}
   {% if top_authors %}<div>{{ author_list(top_authors) }}</div>{% endif %}
 </section>
 {% endif %}
@@ -63,13 +65,20 @@
     <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;">
       {% for c, n in top_concepts %}
         {% set is_active = (selected_concept == c) %}
+        {% if static_build %}
+        <span class="tag" title="filters are disabled in the static build">
+          {{ c }}
+          <span style="font-variant-numeric: tabular-nums; opacity: 0.7;">· {{ n }}</span>
+        </span>
+        {% else %}
         <a class="tag" href="{{ qs(year=selected_year, concept=(none if is_active else c), topic=selected_topic) }}"
            {% if is_active %}style="background: var(--color-accent); color: var(--color-paper); border-color: var(--color-accent);"{% endif %}>
           {{ c }}
           <span style="font-variant-numeric: tabular-nums; opacity: 0.7;">· {{ n }}</span>
         </a>
+        {% endif %}
       {% endfor %}
-      {% if selected_year is not none or selected_concept %}
+      {% if not static_build and (selected_year is not none or selected_concept) %}
         <a href="{{ qs() }}"
            style="font-family: var(--font-ui); font-size: 0.85em; color: var(--color-ink-muted); margin-left: 0.5rem;">
           clear

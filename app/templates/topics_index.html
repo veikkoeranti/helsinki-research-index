@@ -22,7 +22,7 @@
                 padding: 0.25rem 0;
                 border-bottom: 1px solid var(--color-rule);">
       <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-        <a href="/topic/{{ t.topic|urlencode }}">{{ t.topic }}</a>
+        <a href="{{ topic_url(t.topic) }}">{{ t.topic }}</a>
       </div>
       <div style="height: 6px; background: var(--color-rule); position: relative;">
         <div style="position: absolute; left: 0; top: 0; bottom: 0;
