@@ -3,13 +3,15 @@
 {% block body %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-{# Build query strings that preserve cross-filter state. #}
+{# Build URLs that preserve cross-filter state. Always emits the full
+   path — href="" would mean "reload current URL with current query
+   string", which is the opposite of what a clear link should do. #}
 {% macro qs(year=None, concept=None) -%}
   {%- set parts = [] -%}
   {%- if show_excluded %}{% set _ = parts.append('show_excluded=1') %}{% endif -%}
   {%- if year is not none %}{% set _ = parts.append('year=' ~ year) %}{% endif -%}
   {%- if concept %}{% set _ = parts.append('concept=' ~ concept|urlencode) %}{% endif -%}
-  {%- if parts %}?{{ parts|join('&') }}{% endif -%}
+  /neighbourhood/{{ nbhd.id }}{% if parts %}?{{ parts|join('&') }}{% endif -%}
 {%- endmacro %}
 
 {% macro mini_bar_row(label_html, n, max_n) -%}
@@ -107,42 +109,48 @@
 </section>
 {% endif %}
 
-{% if top_concepts or selected_year is not none or selected_concept %}
-<section style="margin-bottom: 1.5rem;">
-  <p class="eyebrow">dominant concepts</p>
-  <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;">
-    {% for c, n in top_concepts %}
-      {% set is_active = (selected_concept == c) %}
-      <a class="tag" href="{{ qs(year=selected_year, concept=(none if is_active else c)) }}"
-         {% if is_active %}style="background: var(--color-accent); color: var(--color-paper); border-color: var(--color-accent);"{% endif %}>
-        {{ c }}
-        <span style="font-variant-numeric: tabular-nums; opacity: 0.7;">· {{ n }}</span>
-      </a>
-    {% endfor %}
-    {% if selected_year is not none or selected_concept %}
-      <a href="{{ qs() }}"
-         style="font-family: var(--font-ui); font-size: 0.85em; color: var(--color-ink-muted); margin-left: 0.5rem;">
-        clear
-        {%- if selected_year is not none and selected_concept %} year &amp; concept
-        {%- elif selected_year is not none %} year filter
-        {%- else %} concept filter
-        {%- endif %}
-      </a>
-    {% endif %}
+{% set show_concepts = top_concepts or selected_year is not none or selected_concept %}
+{% if show_concepts or co_neighbourhoods %}
+<section style="display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 2rem; margin-bottom: 1.75rem;">
+  {% if show_concepts %}
+  <div>
+    <p class="eyebrow">dominant concepts</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;">
+      {% for c, n in top_concepts %}
+        {% set is_active = (selected_concept == c) %}
+        <a class="tag" href="{{ qs(year=selected_year, concept=(none if is_active else c)) }}"
+           {% if is_active %}style="background: var(--color-accent); color: var(--color-paper); border-color: var(--color-accent);"{% endif %}>
+          {{ c }}
+          <span style="font-variant-numeric: tabular-nums; opacity: 0.7;">· {{ n }}</span>
+        </a>
+      {% endfor %}
+      {% if selected_year is not none or selected_concept %}
+        <a href="{{ qs() }}"
+           style="font-family: var(--font-ui); font-size: 0.85em; color: var(--color-ink-muted); margin-left: 0.5rem;">
+          clear
+          {%- if selected_year is not none and selected_concept %} year &amp; concept
+          {%- elif selected_year is not none %} year filter
+          {%- else %} concept filter
+          {%- endif %}
+        </a>
+      {% endif %}
+    </div>
   </div>
-</section>
-{% endif %}
+  {% endif %}
 
-{% if co_neighbourhoods %}
-  {% set co_max = co_neighbourhoods[0].n %}
-<section style="margin-bottom: 1.75rem;
-                max-width: 32rem;">
-  <p class="eyebrow">also discussed alongside</p>
-  {% for c in co_neighbourhoods %}
-    {{ mini_bar_row(
-         '<a href="/neighbourhood/' ~ c.id ~ '">' ~ c.name_fi ~ '</a>',
-         c.n, co_max) }}
-  {% endfor %}
+  {% if co_neighbourhoods %}
+    {% set co_max = co_neighbourhoods[0].n %}
+  <div>
+    <p class="eyebrow">also discussed alongside</p>
+    {% for c in co_neighbourhoods %}
+      {{ mini_bar_row(
+           '<a href="/neighbourhood/' ~ c.id ~ '">' ~ c.name_fi ~ '</a>',
+           c.n, co_max) }}
+    {% endfor %}
+  </div>
+  {% endif %}
 </section>
 {% endif %}
 
