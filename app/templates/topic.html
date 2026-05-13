@@ -1,21 +1,27 @@
 {% extends "base.html" %}
 {% block title %}{{ topic_name }} — Helsinki Research Index{% endblock %}
 {% block body %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+{# Build URLs that preserve cross-filter state for this topic. #}
+{% macro qs(year=None) -%}
+  {%- set parts = [] -%}
+  {%- if year is not none %}{% set _ = parts.append('year=' ~ year) %}{% endif -%}
+  /topic/{{ topic_name|urlencode }}{% if parts %}?{{ parts|join('&') }}{% endif -%}
+{%- endmacro %}
 
 <header class="article-header">
   <p class="eyebrow"><a href="/topics">← all topics</a></p>
   <h1>{{ topic_name }}</h1>
   <p class="lede">
-    {{ papers|length }} paper{{ '' if papers|length == 1 else 's' }} ·
-    {{ points|length }} neighbourhood{{ '' if points|length == 1 else 's' }} mapped within this topic.
+    {{ total_for_topic }} Helsinki paper{{ '' if total_for_topic == 1 else 's' }} under this OpenAlex topic{% if selected_year is not none %},
+    showing only {{ selected_year }} ({{ papers|length }}){% endif %}.
+    {% if selected_year is not none %}
+      <a href="{{ qs() }}">clear year filter</a>
+    {% endif %}
   </p>
 </header>
 
-{% if points %}
-<div id="map" style="height: 50vh; margin-bottom: 2rem; border: 1px solid var(--color-rule, #ddd);"></div>
-{% endif %}
-
+{% if papers %}
 <table class="matrix">
   <thead>
     <tr>
@@ -51,39 +57,7 @@
     {% endfor %}
   </tbody>
 </table>
-
-{% if points %}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  (function () {
-    var points = {{ points|tojson }};
-    var accent = getComputedStyle(document.documentElement)
-      .getPropertyValue('--color-accent').trim() || '#00256b';
-
-    var map = L.map('map').setView([60.192, 24.945], 11);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap',
-      maxZoom: 19
-    }).addTo(map);
-
-    points.forEach(function (p) {
-      var radius = 4 + Math.sqrt(p.paper_count);
-      var marker = L.circleMarker([p.lat, p.lng], {
-        radius: radius,
-        color: accent,
-        weight: 1,
-        fillColor: accent,
-        fillOpacity: 0.6
-      }).addTo(map);
-
-      var quarter = p.is_quarter ? ' <em style="color:#888">(quarter)</em>' : '';
-      marker.bindPopup(
-        '<strong>' + p.name_fi + '</strong>' + quarter + '<br>' +
-        p.paper_count + ' paper' + (p.paper_count === 1 ? '' : 's') + ' in this topic<br>' +
-        '<a href="/neighbourhood/' + encodeURIComponent(p.id) + '">open detail page →</a>'
-      );
-    });
-  })();
-</script>
+{% else %}
+<p class="lede">No papers match this filter.</p>
 {% endif %}
 {% endblock %}

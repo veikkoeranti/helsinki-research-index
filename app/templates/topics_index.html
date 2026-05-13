@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Topics — Helsinki Research Index{% endblock %}
+{% block body %}
+
+<header class="article-header">
+  <p class="eyebrow">OpenAlex topics</p>
+  <h1>Research <em>by topic</em></h1>
+  <p class="lede">
+    {{ topics|length }} topic{{ '' if topics|length == 1 else 's' }} with at least 3 Helsinki papers,
+    sorted by paper count. Topic labels are OpenAlex's subfield-level classification.
+  </p>
+</header>
+
+{% if topics %}
+  {% set max_n = topics[0].paper_count %}
+<section>
+  {% for t in topics %}
+    {% set pct = (t.paper_count / max_n * 100) if max_n else 0 %}
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) 8rem 3rem;
+                align-items: center; gap: 0.75rem; margin: 0.4rem 0;
+                font-family: var(--font-ui); font-size: 0.95em;
+                padding: 0.25rem 0;
+                border-bottom: 1px solid var(--color-rule);">
+      <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+        <a href="/topic/{{ t.topic|urlencode }}">{{ t.topic }}</a>
+      </div>
+      <div style="height: 6px; background: var(--color-rule); position: relative;">
+        <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                    width: {{ pct }}%; background: var(--color-accent);"></div>
+      </div>
+      <div style="text-align: right; font-variant-numeric: tabular-nums;
+                  color: var(--color-ink-muted);">{{ t.paper_count }}</div>
+    </div>
+  {% endfor %}
+</section>
+{% else %}
+<p class="lede">No topics meet the threshold yet.</p>
+{% endif %}
+{% endblock %}

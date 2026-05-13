@@ -451,83 +451,78 @@ def city_scale(request: Request, scale: str = "", sort: str = "year_desc"):
 
 @app.get("/topics", response_class=HTMLResponse)
 def topics_index(request: Request):
-    """List distinct OpenAlex topics with paper counts."""
+    """List distinct OpenAlex topics with >= 3 Helsinki papers."""
     with get_conn() as conn:
-        rows = conn.execute(
+        topics = conn.execute(
             """
             SELECT p.openalex_topic AS topic, COUNT(*) AS paper_count
             FROM paper p
             WHERE p.user_excluded = 0
+              AND p.is_about_helsinki = 1
               AND p.openalex_topic IS NOT NULL
               AND p.openalex_topic != ''
             GROUP BY p.openalex_topic
+            HAVING paper_count >= 3
             ORDER BY paper_count DESC, p.openalex_topic
             """
         ).fetchall()
     return templates.TemplateResponse(
         request,
-        "topics.html",
-        {"topics": rows, "prominent_n": 8},
+        "topics_index.html",
+        {"topics": topics},
     )
 
 
-@app.get("/topic/{topic_name}", response_class=HTMLResponse)
-def topic_detail(request: Request, topic_name: str):
-    """Papers under one OpenAlex topic + a map of their neighbourhoods."""
+@app.get("/topic/{topic_name:path}", response_class=HTMLResponse)
+def topic_detail(
+    request: Request,
+    topic_name: str,
+    year: Optional[int] = None,
+):
+    """Papers under one OpenAlex topic."""
+    year_clause = ""
+    paper_params: list = [topic_name]
+    if year is not None:
+        year_clause = "AND p.year = ?"
+        paper_params.append(year)
+
     with get_conn() as conn:
         papers = conn.execute(
-            """
+            f"""
             SELECT
               p.openalex_id, p.doi, p.title, p.abstract, p.year,
-              p.first_author, p.journal, p.openalex_topic,
-              p.user_excluded AS paper_excluded
+              p.first_author, p.journal, p.openalex_topic
             FROM paper p
             WHERE p.user_excluded = 0
+              AND p.is_about_helsinki = 1
               AND p.openalex_topic = ?
+              {year_clause}
             ORDER BY p.year DESC NULLS LAST, p.title
             """,
-            (topic_name,),
+            paper_params,
         ).fetchall()
 
-        if not papers:
-            raise HTTPException(status_code=404, detail="topic not found")
-
-        nbhd_rows = conn.execute(
+        # 404 only if the topic has *no* papers at all (any year).
+        total_for_topic = conn.execute(
             """
-            SELECT
-              n.id, n.name_fi, n.lat, n.lng, n.is_quarter,
-              COUNT(DISTINCT pn.paper_id) AS paper_count
-            FROM neighbourhood n
-            JOIN paper_neighbourhood pn ON pn.neighbourhood_id = n.id
-            JOIN paper p ON p.openalex_id = pn.paper_id
-            WHERE p.openalex_topic = ?
-              AND p.user_excluded = 0
-              AND pn.user_excluded = 0
-            GROUP BY n.id
-            HAVING paper_count > 0
-            ORDER BY paper_count DESC, n.name_fi
+            SELECT COUNT(*) FROM paper p
+            WHERE p.user_excluded = 0
+              AND p.is_about_helsinki = 1
+              AND p.openalex_topic = ?
             """,
             (topic_name,),
-        ).fetchall()
+        ).fetchone()[0]
+        if total_for_topic == 0:
+            raise HTTPException(status_code=404, detail="topic not found")
 
-    points = [
-        {
-            "id": r["id"],
-            "name_fi": r["name_fi"],
-            "lat": r["lat"],
-            "lng": r["lng"],
-            "is_quarter": bool(r["is_quarter"]),
-            "paper_count": r["paper_count"],
-        }
-        for r in nbhd_rows
-    ]
     return templates.TemplateResponse(
         request,
         "topic.html",
         {
             "topic_name": topic_name,
             "papers": papers,
-            "points": points,
+            "selected_year": year,
+            "total_for_topic": total_for_topic,
         },
     )
 
