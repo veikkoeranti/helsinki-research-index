@@ -67,19 +67,25 @@ def neighbourhood(
     show_excluded: int = 0,
     year: Optional[int] = None,
     concept: Optional[str] = None,
+    topic: Optional[str] = None,
 ):
     """Show one neighbourhood with the papers mapped to it."""
-    # Concept filter is applied to the histogram, author/co-discussed panels,
-    # and the paper list. Year filter is applied to the paper list only —
-    # the histogram is its own state and shouldn't recursively re-filter itself.
-    concept_clause = ""
-    concept_args: list = []
+    # concept and topic filters narrow histogram + authors + co-discussed +
+    # paper list. Year narrows only the paper list. The histogram is its
+    # own state and shouldn't recursively re-filter itself.
+    extra_clauses: list[str] = []
+    extra_args: list = []
     if concept:
-        concept_clause = (
+        extra_clauses.append(
             "AND EXISTS (SELECT 1 FROM json_each(p.extracted_concepts_json) "
             "WHERE json_each.value = ?)"
         )
-        concept_args = [concept]
+        extra_args.append(concept)
+    if topic:
+        extra_clauses.append("AND p.openalex_topic = ?")
+        extra_args.append(topic)
+    concept_clause = " ".join(extra_clauses)
+    concept_args = extra_args
 
     with get_conn() as conn:
         nbhd = conn.execute(
@@ -226,6 +232,7 @@ def neighbourhood(
             "co_neighbourhoods": co_neighbourhoods,
             "top_concepts": top_concepts,
             "selected_concept": concept,
+            "selected_topic": topic,
         },
     )
 
@@ -550,6 +557,28 @@ def topic_detail(
             filter_params,
         ).fetchall()
 
+        # Geographic distribution: one row per neighbourhood with >0 papers
+        # in this topic (and year, when set). When the result is empty the
+        # template hides the map and shows "no neighbourhood-scale research".
+        nbhd_points = conn.execute(
+            f"""
+            SELECT n.id, n.name_fi, n.lat, n.lng,
+                   COUNT(DISTINCT pn.paper_id) AS n_papers
+            FROM neighbourhood n
+            JOIN paper_neighbourhood pn ON pn.neighbourhood_id = n.id
+            JOIN paper p ON p.openalex_id = pn.paper_id
+            WHERE p.openalex_topic = ?
+              AND p.is_about_helsinki = 1
+              AND p.user_excluded = 0
+              AND pn.user_excluded = 0
+              {year_clause}
+            GROUP BY n.id
+            HAVING n_papers > 0
+            ORDER BY n_papers DESC
+            """,
+            filter_params,
+        ).fetchall()
+
     if hist_rows:
         counts_by_year = {r["year"]: r["n"] for r in hist_rows}
         y_min = min(counts_by_year)
@@ -568,6 +597,16 @@ def topic_detail(
             "total_for_topic": total_for_topic,
             "histogram_data": histogram_data,
             "top_authors": top_authors,
+            "nbhd_points": [
+                {
+                    "id": r["id"],
+                    "name_fi": r["name_fi"],
+                    "lat": r["lat"],
+                    "lng": r["lng"],
+                    "n_papers": r["n_papers"],
+                }
+                for r in nbhd_points
+            ],
         },
     )
 

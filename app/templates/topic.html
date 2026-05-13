@@ -2,6 +2,9 @@
 {% from '_aggregations.html' import histogram, author_list %}
 {% block title %}{{ topic_name }} — Helsinki Research Index{% endblock %}
 {% block body %}
+{% if nbhd_points %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endif %}
 
 {# Build URLs that preserve cross-filter state for this topic. #}
 {% macro qs(year=None) -%}
@@ -24,12 +27,29 @@
   </p>
 </header>
 
-{% if histogram_data or top_authors %}
+{% if histogram_data or nbhd_points %}
 <section style="display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
                 gap: 2rem; margin-bottom: 1.5rem;">
   {% if histogram_data %}<div>{{ histogram(histogram_data, selected_year, year_link) }}</div>{% endif %}
-  {% if top_authors %}<div>{{ author_list(top_authors) }}</div>{% endif %}
+  {% if nbhd_points %}
+  <div>
+    <p class="eyebrow">geographic distribution{% if selected_year is not none %} ({{ selected_year }}){% endif %}</p>
+    <div id="topic-map" style="height: 280px; border: 1px solid var(--color-rule, #ddd);"></div>
+  </div>
+  {% endif %}
+</section>
+{% endif %}
+
+{% if histogram_data and not nbhd_points %}
+<p style="font-family: var(--font-ui); font-size: 0.9em; color: var(--color-ink-muted); margin-bottom: 1.5rem;">
+  No neighbourhood-scale research on this topic{% if selected_year is not none %} for {{ selected_year }}{% endif %} — every paper operates at city scale or higher.
+</p>
+{% endif %}
+
+{% if top_authors %}
+<section style="margin-bottom: 1.75rem; max-width: 32rem;">
+  {{ author_list(top_authors) }}
 </section>
 {% endif %}
 
@@ -71,5 +91,44 @@
 </table>
 {% else %}
 <p class="lede">No papers match this filter.</p>
+{% endif %}
+
+{% if nbhd_points %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  (function () {
+    var points = {{ nbhd_points|tojson }};
+    var topicParam = {{ ('?topic=' + (topic_name|urlencode))|tojson }};
+    var accent = getComputedStyle(document.documentElement)
+      .getPropertyValue('--color-accent').trim() || '#00256b';
+
+    var map = L.map('topic-map', { scrollWheelZoom: false })
+      .setView([60.192, 24.945], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap',
+      maxZoom: 19
+    }).addTo(map);
+
+    points.forEach(function (p) {
+      var radius = 4 + Math.sqrt(p.n_papers);
+      var marker = L.circleMarker([p.lat, p.lng], {
+        radius: radius,
+        color: accent,
+        weight: 1,
+        fillColor: accent,
+        fillOpacity: 0.65
+      }).addTo(map);
+      marker.bindTooltip(
+        '<strong>' + p.name_fi + '</strong><br>' +
+        p.n_papers + ' paper' + (p.n_papers === 1 ? '' : 's') + ' in this topic'
+      );
+      marker.bindPopup(
+        '<strong>' + p.name_fi + '</strong><br>' +
+        p.n_papers + ' paper' + (p.n_papers === 1 ? '' : 's') + ' in this topic<br>' +
+        '<a href="/neighbourhood/' + encodeURIComponent(p.id) + topicParam + '">open neighbourhood →</a>'
+      );
+    });
+  })();
+</script>
 {% endif %}
 {% endblock %}

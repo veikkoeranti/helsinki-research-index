@@ -7,17 +7,18 @@
 {# Build URLs that preserve cross-filter state. Always emits the full
    path — href="" would mean "reload current URL with current query
    string", which is the opposite of what a clear link should do. #}
-{% macro qs(year=None, concept=None) -%}
+{% macro qs(year=None, concept=None, topic=None) -%}
   {%- set parts = [] -%}
   {%- if show_excluded %}{% set _ = parts.append('show_excluded=1') %}{% endif -%}
   {%- if year is not none %}{% set _ = parts.append('year=' ~ year) %}{% endif -%}
   {%- if concept %}{% set _ = parts.append('concept=' ~ concept|urlencode) %}{% endif -%}
+  {%- if topic %}{% set _ = parts.append('topic=' ~ topic|urlencode) %}{% endif -%}
   /neighbourhood/{{ nbhd.id }}{% if parts %}?{{ parts|join('&') }}{% endif -%}
 {%- endmacro %}
 
-{# Bound by the histogram macro to produce a per-bar href. Captures the
-   active concept filter so clicking a year preserves it. #}
-{% macro year_link(year) -%}{{ qs(year=year, concept=selected_concept) }}{%- endmacro %}
+{# Bound by the histogram macro to produce a per-bar href. Preserves the
+   active concept and topic filters so clicking a year doesn't drop them. #}
+{% macro year_link(year) -%}{{ qs(year=year, concept=selected_concept, topic=selected_topic) }}{%- endmacro %}
 
 <header class="article-header">
   <p class="eyebrow">
@@ -32,6 +33,12 @@
       <a href="/neighbourhood/{{ nbhd.id }}?show_excluded=1">show excluded</a>
     {% endif %}
   </p>
+  {% if selected_topic %}
+    <p style="font-family: var(--font-ui); font-size: 0.9em; color: var(--color-ink-muted);">
+      Filtered to topic <strong>{{ selected_topic }}</strong>.
+      <a href="{{ qs(year=selected_year, concept=selected_concept) }}">clear topic filter</a>
+    </p>
+  {% endif %}
 </header>
 
 <div id="map" style="height: 280px; margin-bottom: 2rem; border: 1px solid var(--color-rule, #ddd);"></div>
@@ -56,7 +63,7 @@
     <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;">
       {% for c, n in top_concepts %}
         {% set is_active = (selected_concept == c) %}
-        <a class="tag" href="{{ qs(year=selected_year, concept=(none if is_active else c)) }}"
+        <a class="tag" href="{{ qs(year=selected_year, concept=(none if is_active else c), topic=selected_topic) }}"
            {% if is_active %}style="background: var(--color-accent); color: var(--color-paper); border-color: var(--color-accent);"{% endif %}>
           {{ c }}
           <span style="font-variant-numeric: tabular-nums; opacity: 0.7;">· {{ n }}</span>
