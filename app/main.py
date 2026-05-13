@@ -198,9 +198,9 @@ def neighbourhood(
         counts_by_year = {r["year"]: r["n"] for r in hist_rows}
         y_min = min(counts_by_year)
         y_max = max(counts_by_year)
-        histogram = [(y, counts_by_year.get(y, 0)) for y in range(y_min, y_max + 1)]
+        histogram_data = [(y, counts_by_year.get(y, 0)) for y in range(y_min, y_max + 1)]
     else:
-        histogram = []
+        histogram_data = []
 
     # Count concept frequencies across the bag of JSON arrays.
     concept_counts: Counter = Counter()
@@ -220,7 +220,7 @@ def neighbourhood(
             "nbhd": nbhd,
             "papers": papers,
             "show_excluded": bool(show_excluded),
-            "histogram": histogram,
+            "histogram_data": histogram_data,
             "selected_year": year,
             "top_authors": top_authors,
             "co_neighbourhoods": co_neighbourhoods,
@@ -479,29 +479,12 @@ def topic_detail(
     topic_name: str,
     year: Optional[int] = None,
 ):
-    """Papers under one OpenAlex topic."""
-    year_clause = ""
-    paper_params: list = [topic_name]
-    if year is not None:
-        year_clause = "AND p.year = ?"
-        paper_params.append(year)
+    """Papers under one OpenAlex topic, with year histogram + author panel.
 
+    The histogram is its own state — year filter does NOT apply to it (would
+    collapse to a single bar). Authors and the paper list both honour year.
+    """
     with get_conn() as conn:
-        papers = conn.execute(
-            f"""
-            SELECT
-              p.openalex_id, p.doi, p.title, p.abstract, p.year,
-              p.first_author, p.journal, p.openalex_topic
-            FROM paper p
-            WHERE p.user_excluded = 0
-              AND p.is_about_helsinki = 1
-              AND p.openalex_topic = ?
-              {year_clause}
-            ORDER BY p.year DESC NULLS LAST, p.title
-            """,
-            paper_params,
-        ).fetchall()
-
         # 404 only if the topic has *no* papers at all (any year).
         total_for_topic = conn.execute(
             """
@@ -515,6 +498,66 @@ def topic_detail(
         if total_for_topic == 0:
             raise HTTPException(status_code=404, detail="topic not found")
 
+        hist_rows = conn.execute(
+            """
+            SELECT p.year, COUNT(*) AS n
+            FROM paper p
+            WHERE p.openalex_topic = ?
+              AND p.is_about_helsinki = 1
+              AND p.user_excluded = 0
+              AND p.year IS NOT NULL
+            GROUP BY p.year
+            ORDER BY p.year
+            """,
+            (topic_name,),
+        ).fetchall()
+
+        year_clause = ""
+        filter_params: list = [topic_name]
+        if year is not None:
+            year_clause = "AND p.year = ?"
+            filter_params.append(year)
+
+        top_authors = conn.execute(
+            f"""
+            SELECT p.first_author, COUNT(*) AS n
+            FROM paper p
+            WHERE p.openalex_topic = ?
+              AND p.is_about_helsinki = 1
+              AND p.user_excluded = 0
+              AND p.first_author IS NOT NULL
+              AND p.first_author != 'Unknown'
+              {year_clause}
+            GROUP BY p.first_author
+            ORDER BY n DESC, p.first_author
+            LIMIT 5
+            """,
+            filter_params,
+        ).fetchall()
+
+        papers = conn.execute(
+            f"""
+            SELECT
+              p.openalex_id, p.doi, p.title, p.abstract, p.year,
+              p.first_author, p.journal, p.openalex_topic
+            FROM paper p
+            WHERE p.user_excluded = 0
+              AND p.is_about_helsinki = 1
+              AND p.openalex_topic = ?
+              {year_clause}
+            ORDER BY p.year DESC NULLS LAST, p.title
+            """,
+            filter_params,
+        ).fetchall()
+
+    if hist_rows:
+        counts_by_year = {r["year"]: r["n"] for r in hist_rows}
+        y_min = min(counts_by_year)
+        y_max = max(counts_by_year)
+        histogram_data = [(y, counts_by_year.get(y, 0)) for y in range(y_min, y_max + 1)]
+    else:
+        histogram_data = []
+
     return templates.TemplateResponse(
         request,
         "topic.html",
@@ -523,6 +566,8 @@ def topic_detail(
             "papers": papers,
             "selected_year": year,
             "total_for_topic": total_for_topic,
+            "histogram_data": histogram_data,
+            "top_authors": top_authors,
         },
     )
 

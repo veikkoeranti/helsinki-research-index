@@ -1,0 +1,82 @@
+{# Shared aggregation macros used by neighbourhood and topic detail pages. #}
+
+{# A single labelled bar row: label on the left, a proportional bar in the
+   middle, and the count on the right. Used for authors, co-discussed
+   neighbourhoods, anywhere a "name | bar | count" row makes sense. #}
+{% macro bar_row(label_html, n, max_n) -%}
+  {% set pct = (n / max_n * 100) if max_n else 0 %}
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ label_html|safe }}</div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: {{ pct }}%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">{{ n }}</div>
+  </div>
+{%- endmacro %}
+
+{# Year histogram. `data` is a list of (year, count) tuples with the year
+   range zero-filled. `selected_year` may be None or one of the years.
+   `link_for_year` is a single-arg callable (a Jinja macro) returning the
+   href for clicking bar Y — each calling page builds it so the histogram
+   stays agnostic about which other filters are in play. #}
+{% macro histogram(data, selected_year, link_for_year) -%}
+  {% if data %}
+    {% set y_min = data[0][0] %}
+    {% set y_max = data[-1][0] %}
+    {% set y_mid = (y_min + y_max) // 2 %}
+    {% set max_count = data|map(attribute=1)|max %}
+    {% set span = (y_max - y_min) if y_max != y_min else 1 %}
+    {% set vb_w = 1000 %}
+    {% set vb_h = 100 %}
+    {% set chart_h = 78 %}
+    {% set bar_w = (vb_w / (span + 1)) * 0.7 %}
+  <p class="eyebrow">papers per year</p>
+  <svg viewBox="0 0 {{ vb_w }} {{ vb_h }}" preserveAspectRatio="none"
+       style="width: 100%; height: 90px; display: block;"
+       role="img" aria-label="Histogram of papers per year">
+    <line x1="0" y1="{{ chart_h }}" x2="{{ vb_w }}" y2="{{ chart_h }}"
+          stroke="var(--color-rule)" stroke-width="1"
+          vector-effect="non-scaling-stroke"/>
+    {% for y, n in data %}
+      {% set x_center = (vb_w / (span + 1)) * (loop.index0 + 0.5) %}
+      {% set h = (n / max_count) * chart_h if max_count else 0 %}
+      {% set is_sel = (selected_year == y) %}
+      <a href="{{ link_for_year(y) }}">
+        <title>{{ y }} — {{ n }} paper{{ '' if n == 1 else 's' }}</title>
+        <rect x="{{ x_center - bar_w / 2 }}"
+              y="{{ chart_h - h }}"
+              width="{{ bar_w }}"
+              height="{{ h }}"
+              fill="{% if is_sel %}var(--color-accent-hot){% else %}var(--color-accent){% endif %}"
+              fill-opacity="{% if selected_year is none or is_sel %}1{% else %}0.5{% endif %}"/>
+      </a>
+    {% endfor %}
+    <text x="0" y="{{ vb_h - 2 }}"
+          font-family="var(--font-ui)" font-size="11"
+          fill="var(--color-ink-muted)" text-anchor="start">{{ y_min }}</text>
+    {% if y_min != y_max %}
+    <text x="{{ vb_w / 2 }}" y="{{ vb_h - 2 }}"
+          font-family="var(--font-ui)" font-size="11"
+          fill="var(--color-ink-muted)" text-anchor="middle">{{ y_mid }}</text>
+    <text x="{{ vb_w }}" y="{{ vb_h - 2 }}"
+          font-family="var(--font-ui)" font-size="11"
+          fill="var(--color-ink-muted)" text-anchor="end">{{ y_max }}</text>
+    {% endif %}
+  </svg>
+  {% endif %}
+{%- endmacro %}
+
+{# Top-N author list. Each `author` row needs .first_author and .n. #}
+{% macro author_list(authors) -%}
+  {% if authors %}
+    {% set max_n = authors[0].n %}
+  <p class="eyebrow">most active authors</p>
+  {% for a in authors %}
+    {{ bar_row(a.first_author, a.n, max_n) }}
+  {% endfor %}
+  {% endif %}
+{%- endmacro %}

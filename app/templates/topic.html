@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from '_aggregations.html' import histogram, author_list %}
 {% block title %}{{ topic_name }} — Helsinki Research Index{% endblock %}
 {% block body %}
 
@@ -8,6 +9,8 @@
   {%- if year is not none %}{% set _ = parts.append('year=' ~ year) %}{% endif -%}
   /topic/{{ topic_name|urlencode }}{% if parts %}?{{ parts|join('&') }}{% endif -%}
 {%- endmacro %}
+
+{% macro year_link(year) -%}{{ qs(year=year) }}{%- endmacro %}
 
 <header class="article-header">
   <p class="eyebrow"><a href="/topics">← all topics</a></p>
@@ -20,6 +23,15 @@
     {% endif %}
   </p>
 </header>
+
+{% if histogram_data or top_authors %}
+<section style="display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 2rem; margin-bottom: 1.5rem;">
+  {% if histogram_data %}<div>{{ histogram(histogram_data, selected_year, year_link) }}</div>{% endif %}
+  {% if top_authors %}<div>{{ author_list(top_authors) }}</div>{% endif %}
+</section>
+{% endif %}
 
 {% if papers %}
 <table class="matrix">
