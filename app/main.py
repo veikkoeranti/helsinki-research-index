@@ -97,6 +97,45 @@ def neighbourhood(
             "" if show_excluded
             else "AND pn.user_excluded = 0 AND p.user_excluded = 0"
         )
+        # Most active authors. Uses paper.first_author only — this misses
+        # contributions where the relevant author isn't the first listed.
+        # When we add a per-author table this query should be replaced.
+        top_authors = conn.execute(
+            """
+            SELECT p.first_author, COUNT(*) AS n
+            FROM paper p
+            JOIN paper_neighbourhood pn ON pn.paper_id = p.openalex_id
+            WHERE pn.neighbourhood_id = ?
+              AND pn.user_excluded = 0
+              AND p.user_excluded = 0
+              AND p.first_author IS NOT NULL
+              AND p.first_author != 'Unknown'
+            GROUP BY p.first_author
+            ORDER BY n DESC, p.first_author
+            LIMIT 5
+            """,
+            (nbhd_id,),
+        ).fetchall()
+
+        co_neighbourhoods = conn.execute(
+            """
+            SELECT n2.id, n2.name_fi, COUNT(DISTINCT pn1.paper_id) AS n
+            FROM paper_neighbourhood pn1
+            JOIN paper_neighbourhood pn2 ON pn2.paper_id = pn1.paper_id
+            JOIN neighbourhood n2 ON n2.id = pn2.neighbourhood_id
+            JOIN paper p ON p.openalex_id = pn1.paper_id
+            WHERE pn1.neighbourhood_id = ?
+              AND pn2.neighbourhood_id != ?
+              AND pn1.user_excluded = 0
+              AND pn2.user_excluded = 0
+              AND p.user_excluded = 0
+            GROUP BY n2.id
+            ORDER BY n DESC, n2.name_fi
+            LIMIT 5
+            """,
+            (nbhd_id, nbhd_id),
+        ).fetchall()
+
         year_clause = ""
         params: list = [nbhd_id]
         if year is not None:
@@ -138,6 +177,8 @@ def neighbourhood(
             "show_excluded": bool(show_excluded),
             "histogram": histogram,
             "selected_year": year,
+            "top_authors": top_authors,
+            "co_neighbourhoods": co_neighbourhoods,
         },
     )
 

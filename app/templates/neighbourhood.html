@@ -73,6 +73,49 @@
 </section>
 {% endif %}
 
+{% macro mini_bar_row(label_html, n, max_n) -%}
+  {% set pct = (n / max_n * 100) if max_n else 0 %}
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ label_html|safe }}</div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: {{ pct }}%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">{{ n }}</div>
+  </div>
+{%- endmacro %}
+
+{% if top_authors or co_neighbourhoods %}
+<section style="display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 2rem; margin-bottom: 1.75rem;">
+  {% if top_authors %}
+  {% set authors_max = top_authors[0].n %}
+  <div>
+    <p class="eyebrow">most active authors</p>
+    {% for a in top_authors %}
+      {{ mini_bar_row(a.first_author, a.n, authors_max) }}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if co_neighbourhoods %}
+  {% set co_max = co_neighbourhoods[0].n %}
+  <div>
+    <p class="eyebrow">also discussed alongside</p>
+    {% for c in co_neighbourhoods %}
+      {{ mini_bar_row(
+           '<a href="/neighbourhood/' ~ c.id ~ '">' ~ c.name_fi ~ '</a>',
+           c.n, co_max) }}
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+{% endif %}
+
 {% if papers %}
 <table class="matrix">
   <thead>
