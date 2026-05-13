@@ -5,19 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Map — Helsinki Research Index</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Geist:wght@300..700&display=swap">
-  <link rel="stylesheet" href="/helsinki-papers-index/static/css/app.css">
+  <link rel="stylesheet" href="/helsinki-research-index/static/css/app.css">
   
 </head>
 <body>
   <header class="site-header">
     <div class="shell">
-      <a href="/helsinki-papers-index/" class="site-title">Helsinki <em>Research Index</em></a>
+      <a href="/helsinki-research-index/" class="site-title">Helsinki <em>Research Index</em></a>
       <nav class="site-nav">
-        <a href="/helsinki-papers-index/">Neighbourhoods</a>
-        <a href="/helsinki-papers-index/map">Map</a>
-        <a href="/helsinki-papers-index/topics">Topics</a>
-        <a href="/helsinki-papers-index/city-scale">City-scale</a>
-        <a href="/helsinki-papers-index/papers">All papers</a>
+        <a href="/helsinki-research-index/">Neighbourhoods</a>
+        <a href="/helsinki-research-index/map">Map</a>
+        <a href="/helsinki-research-index/topics">Topics</a>
+        <a href="/helsinki-research-index/city-scale">City-scale</a>
+        <a href="/helsinki-research-index/papers">All papers</a>
       </nav>
     </div>
   </header>
@@ -32,7 +32,7 @@
     The 14 quarters appear as pins on top because their polygons aren't
     in the boundary dataset.
     
-      <a href="/helsinki-papers-index/map?show_empty=1">show empty quarters too</a>
+      <a href="/helsinki-research-index/map?show_empty=1">show empty quarters too</a>
     
   </p>
 </header>
@@ -83,13 +83,13 @@
         marker.bindPopup(
           '<strong>' + p.name_fi + '</strong> <em style="color:#888">(quarter)</em><br>' +
           p.paper_count + ' paper' + (p.paper_count === 1 ? '' : 's') + '<br>' +
-          '<a href="/helsinki-papers-index/neighbourhood/' + encodeURIComponent(p.id) + '">open detail page →</a>'
+          '<a href="/helsinki-research-index/neighbourhood/' + encodeURIComponent(p.id) + '">open detail page →</a>'
         );
         marker.bringToFront();
       });
     }
 
-    fetch('/helsinki-papers-index/static/geo/helsinki_neighbourhoods.geojson')
+    fetch('/helsinki-research-index/static/geo/helsinki_neighbourhoods.geojson')
       .then(function (r) { return r.json(); })
       .then(function (gj) {
         L.geoJSON(gj, {
@@ -118,7 +118,7 @@
               layer.setStyle({ weight: 1 });
             });
             layer.on('click', function () {
-              window.location.href = '/helsinki-papers-index/neighbourhood/' + encodeURIComponent(id);
+              window.location.href = '/helsinki-research-index/neighbourhood/' + encodeURIComponent(id);
             });
           }
         }).addTo(map);
