@@ -3,6 +3,15 @@
 {% block body %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
+{# Build query strings that preserve cross-filter state. #}
+{% macro qs(year=None, concept=None) -%}
+  {%- set parts = [] -%}
+  {%- if show_excluded %}{% set _ = parts.append('show_excluded=1') %}{% endif -%}
+  {%- if year is not none %}{% set _ = parts.append('year=' ~ year) %}{% endif -%}
+  {%- if concept %}{% set _ = parts.append('concept=' ~ concept|urlencode) %}{% endif -%}
+  {%- if parts %}?{{ parts|join('&') }}{% endif -%}
+{%- endmacro %}
+
 <header class="article-header">
   <p class="eyebrow">
     {{ nbhd.major_district or '—' }}{% if nbhd.is_quarter %} · quarter{% endif %}
@@ -42,7 +51,7 @@
       {% set x_center = (vb_w / (span + 1)) * (loop.index0 + 0.5) %}
       {% set h = (n / max_count) * chart_h if max_count else 0 %}
       {% set is_sel = (selected_year == y) %}
-      <a href="?year={{ y }}{% if show_excluded %}&show_excluded=1{% endif %}">
+      <a href="{{ qs(year=y, concept=selected_concept) }}">
         <title>{{ y }} — {{ n }} paper{{ '' if n == 1 else 's' }}</title>
         <rect x="{{ x_center - bar_w / 2 }}"
               y="{{ chart_h - h }}"
@@ -64,12 +73,32 @@
           fill="var(--color-ink-muted)" text-anchor="end">{{ y_max }}</text>
     {% endif %}
   </svg>
-  {% if selected_year is not none %}
-    <p style="font-family: var(--font-ui); font-size: 0.85em; color: var(--color-ink-muted); margin-top: 0.25rem;">
-      Showing only papers from <strong>{{ selected_year }}</strong>.
-      <a href="?{% if show_excluded %}show_excluded=1{% endif %}">clear year filter</a>
-    </p>
-  {% endif %}
+</section>
+{% endif %}
+
+{% if top_concepts or selected_year is not none or selected_concept %}
+<section style="margin-bottom: 1.5rem;">
+  <p class="eyebrow">dominant concepts</p>
+  <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;">
+    {% for c, n in top_concepts %}
+      {% set is_active = (selected_concept == c) %}
+      <a class="tag" href="{{ qs(year=selected_year, concept=(none if is_active else c)) }}"
+         {% if is_active %}style="background: var(--color-accent); color: var(--color-paper); border-color: var(--color-accent);"{% endif %}>
+        {{ c }}
+        <span style="font-variant-numeric: tabular-nums; opacity: 0.7;">· {{ n }}</span>
+      </a>
+    {% endfor %}
+    {% if selected_year is not none or selected_concept %}
+      <a href="{{ qs() }}"
+         style="font-family: var(--font-ui); font-size: 0.85em; color: var(--color-ink-muted); margin-left: 0.5rem;">
+        clear
+        {%- if selected_year is not none and selected_concept %} year &amp; concept
+        {%- elif selected_year is not none %} year filter
+        {%- else %} concept filter
+        {%- endif %}
+      </a>
+    {% endif %}
+  </div>
 </section>
 {% endif %}
 

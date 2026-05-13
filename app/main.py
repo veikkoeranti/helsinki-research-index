@@ -13,6 +13,7 @@ Claude Code prompts.
 
 import json
 import sqlite3
+from collections import Counter
 from pathlib import Path
 from typing import Optional
 
@@ -65,8 +66,21 @@ def neighbourhood(
     nbhd_id: str,
     show_excluded: int = 0,
     year: Optional[int] = None,
+    concept: Optional[str] = None,
 ):
     """Show one neighbourhood with the papers mapped to it."""
+    # Concept filter is applied to the histogram, author/co-discussed panels,
+    # and the paper list. Year filter is applied to the paper list only —
+    # the histogram is its own state and shouldn't recursively re-filter itself.
+    concept_clause = ""
+    concept_args: list = []
+    if concept:
+        concept_clause = (
+            "AND EXISTS (SELECT 1 FROM json_each(p.extracted_concepts_json) "
+            "WHERE json_each.value = ?)"
+        )
+        concept_args = [concept]
+
     with get_conn() as conn:
         nbhd = conn.execute(
             "SELECT id, name_fi, name_sv, major_district, lat, lng, is_quarter "
@@ -76,10 +90,10 @@ def neighbourhood(
         if nbhd is None:
             raise HTTPException(status_code=404, detail="neighbourhood not found")
 
-        # Year histogram — built from non-excluded papers only (show_excluded
-        # doesn't affect it; the histogram is always the "real" research rhythm).
+        # Year histogram. Concept filter applies; year filter doesn't (would
+        # collapse the chart to a single bar).
         hist_rows = conn.execute(
-            """
+            f"""
             SELECT p.year, COUNT(*) AS n
             FROM paper p
             JOIN paper_neighbourhood pn ON pn.paper_id = p.openalex_id
@@ -87,10 +101,11 @@ def neighbourhood(
               AND pn.user_excluded = 0
               AND p.user_excluded = 0
               AND p.year IS NOT NULL
+              {concept_clause}
             GROUP BY p.year
             ORDER BY p.year
             """,
-            (nbhd_id,),
+            [nbhd_id] + concept_args,
         ).fetchall()
 
         exclude_clause = (
@@ -101,7 +116,7 @@ def neighbourhood(
         # contributions where the relevant author isn't the first listed.
         # When we add a per-author table this query should be replaced.
         top_authors = conn.execute(
-            """
+            f"""
             SELECT p.first_author, COUNT(*) AS n
             FROM paper p
             JOIN paper_neighbourhood pn ON pn.paper_id = p.openalex_id
@@ -110,15 +125,16 @@ def neighbourhood(
               AND p.user_excluded = 0
               AND p.first_author IS NOT NULL
               AND p.first_author != 'Unknown'
+              {concept_clause}
             GROUP BY p.first_author
             ORDER BY n DESC, p.first_author
             LIMIT 5
             """,
-            (nbhd_id,),
+            [nbhd_id] + concept_args,
         ).fetchall()
 
         co_neighbourhoods = conn.execute(
-            """
+            f"""
             SELECT n2.id, n2.name_fi, COUNT(DISTINCT pn1.paper_id) AS n
             FROM paper_neighbourhood pn1
             JOIN paper_neighbourhood pn2 ON pn2.paper_id = pn1.paper_id
@@ -129,18 +145,35 @@ def neighbourhood(
               AND pn1.user_excluded = 0
               AND pn2.user_excluded = 0
               AND p.user_excluded = 0
+              {concept_clause}
             GROUP BY n2.id
             ORDER BY n DESC, n2.name_fi
             LIMIT 5
             """,
-            (nbhd_id, nbhd_id),
+            [nbhd_id, nbhd_id] + concept_args,
+        ).fetchall()
+
+        # Chip list: top concepts across all non-excluded papers in this
+        # neighbourhood. NOT filtered by the active concept (otherwise the
+        # chip row would collapse to a single chip when one is selected).
+        concept_blobs = conn.execute(
+            """
+            SELECT p.extracted_concepts_json
+            FROM paper p
+            JOIN paper_neighbourhood pn ON pn.paper_id = p.openalex_id
+            WHERE pn.neighbourhood_id = ?
+              AND pn.user_excluded = 0
+              AND p.user_excluded = 0
+              AND p.extracted_concepts_json IS NOT NULL
+            """,
+            (nbhd_id,),
         ).fetchall()
 
         year_clause = ""
-        params: list = [nbhd_id]
+        paper_params: list = [nbhd_id] + concept_args
         if year is not None:
             year_clause = "AND p.year = ?"
-            params.append(year)
+            paper_params.append(year)
 
         papers = conn.execute(
             f"""
@@ -153,10 +186,11 @@ def neighbourhood(
             JOIN paper p ON p.openalex_id = pn.paper_id
             WHERE pn.neighbourhood_id = ?
               {exclude_clause}
+              {concept_clause}
               {year_clause}
             ORDER BY p.year DESC NULLS LAST, p.title
             """,
-            params,
+            paper_params,
         ).fetchall()
 
     # Zero-fill the year range so visual density reflects actual rhythm.
@@ -167,6 +201,17 @@ def neighbourhood(
         histogram = [(y, counts_by_year.get(y, 0)) for y in range(y_min, y_max + 1)]
     else:
         histogram = []
+
+    # Count concept frequencies across the bag of JSON arrays.
+    concept_counts: Counter = Counter()
+    for row in concept_blobs:
+        try:
+            for c in json.loads(row["extracted_concepts_json"]) or []:
+                if isinstance(c, str) and c:
+                    concept_counts[c] += 1
+        except (json.JSONDecodeError, TypeError):
+            continue
+    top_concepts = concept_counts.most_common(8)
 
     return templates.TemplateResponse(
         request,
@@ -179,6 +224,8 @@ def neighbourhood(
             "selected_year": year,
             "top_authors": top_authors,
             "co_neighbourhoods": co_neighbourhoods,
+            "top_concepts": top_concepts,
+            "selected_concept": concept,
         },
     )
 
