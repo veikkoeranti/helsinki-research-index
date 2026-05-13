@@ -14,6 +14,7 @@ Claude Code prompts.
 import json
 import sqlite3
 from pathlib import Path
+from typing import Optional
 
 from fastapi import FastAPI, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -59,7 +60,12 @@ def index(request: Request):
 
 
 @app.get("/neighbourhood/{nbhd_id}", response_class=HTMLResponse)
-def neighbourhood(request: Request, nbhd_id: str, show_excluded: int = 0):
+def neighbourhood(
+    request: Request,
+    nbhd_id: str,
+    show_excluded: int = 0,
+    year: Optional[int] = None,
+):
     """Show one neighbourhood with the papers mapped to it."""
     with get_conn() as conn:
         nbhd = conn.execute(
@@ -70,10 +76,33 @@ def neighbourhood(request: Request, nbhd_id: str, show_excluded: int = 0):
         if nbhd is None:
             raise HTTPException(status_code=404, detail="neighbourhood not found")
 
+        # Year histogram — built from non-excluded papers only (show_excluded
+        # doesn't affect it; the histogram is always the "real" research rhythm).
+        hist_rows = conn.execute(
+            """
+            SELECT p.year, COUNT(*) AS n
+            FROM paper p
+            JOIN paper_neighbourhood pn ON pn.paper_id = p.openalex_id
+            WHERE pn.neighbourhood_id = ?
+              AND pn.user_excluded = 0
+              AND p.user_excluded = 0
+              AND p.year IS NOT NULL
+            GROUP BY p.year
+            ORDER BY p.year
+            """,
+            (nbhd_id,),
+        ).fetchall()
+
         exclude_clause = (
             "" if show_excluded
             else "AND pn.user_excluded = 0 AND p.user_excluded = 0"
         )
+        year_clause = ""
+        params: list = [nbhd_id]
+        if year is not None:
+            year_clause = "AND p.year = ?"
+            params.append(year)
+
         papers = conn.execute(
             f"""
             SELECT
@@ -85,10 +114,20 @@ def neighbourhood(request: Request, nbhd_id: str, show_excluded: int = 0):
             JOIN paper p ON p.openalex_id = pn.paper_id
             WHERE pn.neighbourhood_id = ?
               {exclude_clause}
+              {year_clause}
             ORDER BY p.year DESC NULLS LAST, p.title
             """,
-            (nbhd_id,),
+            params,
         ).fetchall()
+
+    # Zero-fill the year range so visual density reflects actual rhythm.
+    if hist_rows:
+        counts_by_year = {r["year"]: r["n"] for r in hist_rows}
+        y_min = min(counts_by_year)
+        y_max = max(counts_by_year)
+        histogram = [(y, counts_by_year.get(y, 0)) for y in range(y_min, y_max + 1)]
+    else:
+        histogram = []
 
     return templates.TemplateResponse(
         request,
@@ -97,6 +136,8 @@ def neighbourhood(request: Request, nbhd_id: str, show_excluded: int = 0):
             "nbhd": nbhd,
             "papers": papers,
             "show_excluded": bool(show_excluded),
+            "histogram": histogram,
+            "selected_year": year,
         },
     )
 
@@ -405,7 +446,7 @@ def topic_detail(request: Request, topic_name: str):
 
 @app.get("/map", response_class=HTMLResponse)
 def map_view(request: Request, show_empty: int = 0):
-    """Single Leaflet map with one CircleMarker per neighbourhood."""
+    """Choropleth of kaupunginosa polygons + CircleMarkers for the 14 quarters."""
     with get_conn() as conn:
         rows = conn.execute(
             """
@@ -422,22 +463,26 @@ def map_view(request: Request, show_empty: int = 0):
             """
         ).fetchall()
 
-    points = [
+    counts_by_id: dict[str, int] = {r["id"]: r["paper_count"] for r in rows}
+    quarter_points = [
         {
             "id": r["id"],
             "name_fi": r["name_fi"],
             "lat": r["lat"],
             "lng": r["lng"],
-            "is_quarter": bool(r["is_quarter"]),
             "paper_count": r["paper_count"],
         }
         for r in rows
-        if show_empty or r["paper_count"] > 0
+        if r["is_quarter"] and (show_empty or r["paper_count"] > 0)
     ]
     return templates.TemplateResponse(
         request,
         "map.html",
-        {"points": points, "show_empty": bool(show_empty)},
+        {
+            "counts_by_id": counts_by_id,
+            "quarter_points": quarter_points,
+            "show_empty": bool(show_empty),
+        },
     )
 
 

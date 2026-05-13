@@ -51,9 +51,11 @@
 <section style="margin-bottom: 2rem;">
   <h2>Mapped neighbourhoods</h2>
   {% if mappings %}
+    {% if not (read_only | default(false)) %}
     <p style="color: var(--color-ink-muted); font-size: 0.9em;">
       Uncheck "this paper IS about this area" to exclude a false-positive mapping.
     </p>
+    {% endif %}
     <ul style="list-style: none; padding-left: 0;">
       {% for m in mappings %}
         {% include "_mapping_row.html" %}
@@ -63,6 +65,7 @@
     <p style="color: var(--color-ink-muted);">No neighbourhood mappings yet.</p>
   {% endif %}
 
+  {% if not (read_only | default(false)) %}
   <form action="/paper/{{ short_id }}/mapping/add" method="post" style="margin-top: 1rem;">
     <label>
       Add another neighbourhood:
@@ -75,8 +78,10 @@
     </label>
     <button type="submit">Add</button>
   </form>
+  {% endif %}
 </section>
 
+{% if not (read_only | default(false)) %}
 <section style="margin-bottom: 2rem;">
   <h2>Editorial</h2>
   <form action="/paper/{{ short_id }}/exclude" method="post" style="margin-bottom: 1rem;">
@@ -96,5 +101,6 @@
     <button type="submit">Save notes</button>
   </form>
 </section>
+{% endif %}
 
 {% endblock %}

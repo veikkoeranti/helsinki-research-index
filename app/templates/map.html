@@ -7,24 +7,30 @@
   <p class="eyebrow">map view</p>
   <h1>Helsinki <em>by neighbourhood</em></h1>
   <p class="lede">
-    {{ points|length }} neighbourhood{{ '' if points|length == 1 else 's' }} shown.
-    Pin size scales with paper count (after exclusions).
+    Choropleth across the 60 kaupunginosat (darker = more papers).
+    The 14 quarters appear as pins on top because their polygons aren't
+    in the boundary dataset.
     {% if show_empty %}
-      <a href="/map">hide empty</a>
+      <a href="/map">hide empty quarters</a>
     {% else %}
-      <a href="/map?show_empty=1">show empty neighbourhoods</a>
+      <a href="/map?show_empty=1">show empty quarters too</a>
     {% endif %}
   </p>
 </header>
 
-<div id="map" style="height: 70vh; margin-bottom: 2rem; border: 1px solid var(--color-rule, #ddd);"></div>
+<div id="map" style="height: 70vh; margin-bottom: 1rem; border: 1px solid var(--color-rule, #ddd);"></div>
+<p style="color: var(--color-ink-muted); font-size: 0.85em;">
+  Boundary data: Helsinki Region Infoshare — Helsingin kaupunginosajako (CC BY 4.0).
+</p>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
   (function () {
-    var points = {{ points|tojson }};
-    var accent = getComputedStyle(document.documentElement)
-      .getPropertyValue('--color-accent').trim() || '#00256b';
+    var counts = {{ counts_by_id|tojson }};
+    var quarterPoints = {{ quarter_points|tojson }};
+    var rootStyle = getComputedStyle(document.documentElement);
+    var accent = rootStyle.getPropertyValue('--color-accent').trim() || '#00256b';
+    var accentHot = rootStyle.getPropertyValue('--color-accent-hot').trim() || '#c1432a';
 
     var map = L.map('map').setView([60.192, 24.945], 11);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -32,23 +38,74 @@
       maxZoom: 19
     }).addTo(map);
 
-    points.forEach(function (p) {
-      var radius = 4 + Math.sqrt(p.paper_count);
-      var marker = L.circleMarker([p.lat, p.lng], {
-        radius: radius,
-        color: accent,
-        weight: 1,
-        fillColor: accent,
-        fillOpacity: p.paper_count > 0 ? 0.6 : 0.15
-      }).addTo(map);
+    var maxCount = 0;
+    Object.values(counts).forEach(function (c) { if (c > maxCount) maxCount = c; });
+    var denom = Math.sqrt(maxCount) || 1;
 
-      var quarter = p.is_quarter ? ' <em style="color:#888">(quarter)</em>' : '';
-      marker.bindPopup(
-        '<strong>' + p.name_fi + '</strong>' + quarter + '<br>' +
-        p.paper_count + ' paper' + (p.paper_count === 1 ? '' : 's') + '<br>' +
-        '<a href="/neighbourhood/' + encodeURIComponent(p.id) + '">open detail page →</a>'
-      );
-    });
+    function opacityForCount(c) {
+      if (!c) return 0.05;
+      return Math.min(0.85, 0.1 + (Math.sqrt(c) / denom) * 0.75);
+    }
+
+    function addQuarterPins() {
+      quarterPoints.forEach(function (p) {
+        var radius = 4 + Math.sqrt(p.paper_count);
+        var marker = L.circleMarker([p.lat, p.lng], {
+          radius: radius,
+          color: accentHot,
+          weight: 1.5,
+          fillColor: accentHot,
+          fillOpacity: p.paper_count > 0 ? 0.75 : 0.25
+        }).addTo(map);
+        marker.bindTooltip(
+          '<strong>' + p.name_fi + '</strong> <em style="color:#888">(quarter)</em><br>' +
+          p.paper_count + ' paper' + (p.paper_count === 1 ? '' : 's')
+        );
+        marker.bindPopup(
+          '<strong>' + p.name_fi + '</strong> <em style="color:#888">(quarter)</em><br>' +
+          p.paper_count + ' paper' + (p.paper_count === 1 ? '' : 's') + '<br>' +
+          '<a href="/neighbourhood/' + encodeURIComponent(p.id) + '">open detail page →</a>'
+        );
+        marker.bringToFront();
+      });
+    }
+
+    fetch('/static/geo/helsinki_neighbourhoods.geojson')
+      .then(function (r) { return r.json(); })
+      .then(function (gj) {
+        L.geoJSON(gj, {
+          style: function (feat) {
+            var c = counts[feat.properties.id] || 0;
+            return {
+              color: accent,
+              weight: 1,
+              fillColor: accent,
+              fillOpacity: opacityForCount(c)
+            };
+          },
+          onEachFeature: function (feat, layer) {
+            var id = feat.properties.id;
+            var name = feat.properties.name_fi;
+            var c = counts[id] || 0;
+            layer.bindTooltip(
+              '<strong>' + name + '</strong><br>' +
+              c + ' paper' + (c === 1 ? '' : 's'),
+              { sticky: true }
+            );
+            layer.on('mouseover', function () {
+              layer.setStyle({ weight: 2.5 });
+            });
+            layer.on('mouseout', function () {
+              layer.setStyle({ weight: 1 });
+            });
+            layer.on('click', function () {
+              window.location.href = '/neighbourhood/' + encodeURIComponent(id);
+            });
+          }
+        }).addTo(map);
+
+        addQuarterPins();
+      });
   })();
 </script>
 {% endblock %}

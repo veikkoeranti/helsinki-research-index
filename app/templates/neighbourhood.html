@@ -20,6 +20,59 @@
 
 <div id="map" style="height: 280px; margin-bottom: 2rem; border: 1px solid var(--color-rule, #ddd);"></div>
 
+{% if histogram %}
+  {% set y_min = histogram[0][0] %}
+  {% set y_max = histogram[-1][0] %}
+  {% set y_mid = (y_min + y_max) // 2 %}
+  {% set max_count = histogram|map(attribute=1)|max %}
+  {% set span = (y_max - y_min) if y_max != y_min else 1 %}
+  {% set vb_w = 1000 %}
+  {% set vb_h = 100 %}
+  {% set chart_h = 78 %}
+  {% set bar_w = (vb_w / (span + 1)) * 0.7 %}
+<section style="margin-bottom: 1.5rem;">
+  <p class="eyebrow">papers per year</p>
+  <svg viewBox="0 0 {{ vb_w }} {{ vb_h }}" preserveAspectRatio="none"
+       style="width: 100%; height: 90px; display: block;"
+       role="img" aria-label="Histogram of papers per year">
+    <line x1="0" y1="{{ chart_h }}" x2="{{ vb_w }}" y2="{{ chart_h }}"
+          stroke="var(--color-rule)" stroke-width="1"
+          vector-effect="non-scaling-stroke"/>
+    {% for y, n in histogram %}
+      {% set x_center = (vb_w / (span + 1)) * (loop.index0 + 0.5) %}
+      {% set h = (n / max_count) * chart_h if max_count else 0 %}
+      {% set is_sel = (selected_year == y) %}
+      <a href="?year={{ y }}{% if show_excluded %}&show_excluded=1{% endif %}">
+        <title>{{ y }} — {{ n }} paper{{ '' if n == 1 else 's' }}</title>
+        <rect x="{{ x_center - bar_w / 2 }}"
+              y="{{ chart_h - h }}"
+              width="{{ bar_w }}"
+              height="{{ h }}"
+              fill="{% if is_sel %}var(--color-accent-hot){% else %}var(--color-accent){% endif %}"
+              fill-opacity="{% if selected_year is none or is_sel %}1{% else %}0.5{% endif %}"/>
+      </a>
+    {% endfor %}
+    <text x="0" y="{{ vb_h - 2 }}"
+          font-family="var(--font-ui)" font-size="11"
+          fill="var(--color-ink-muted)" text-anchor="start">{{ y_min }}</text>
+    {% if y_min != y_max %}
+    <text x="{{ vb_w / 2 }}" y="{{ vb_h - 2 }}"
+          font-family="var(--font-ui)" font-size="11"
+          fill="var(--color-ink-muted)" text-anchor="middle">{{ y_mid }}</text>
+    <text x="{{ vb_w }}" y="{{ vb_h - 2 }}"
+          font-family="var(--font-ui)" font-size="11"
+          fill="var(--color-ink-muted)" text-anchor="end">{{ y_max }}</text>
+    {% endif %}
+  </svg>
+  {% if selected_year is not none %}
+    <p style="font-family: var(--font-ui); font-size: 0.85em; color: var(--color-ink-muted); margin-top: 0.25rem;">
+      Showing only papers from <strong>{{ selected_year }}</strong>.
+      <a href="?{% if show_excluded %}show_excluded=1{% endif %}">clear year filter</a>
+    </p>
+  {% endif %}
+</section>
+{% endif %}
+
 {% if papers %}
 <table class="matrix">
   <thead>
