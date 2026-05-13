@@ -22,6 +22,7 @@ authoritative consumer either way).
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import re
@@ -588,6 +589,64 @@ def build_places_json(conn: sqlite3.Connection) -> int:
     return len(payload)
 
 
+# ---------------------------------------------------------------------------
+# Base-URL rewriting
+# ---------------------------------------------------------------------------
+
+# Every absolute path the templates emit starts with one of these prefixes.
+# Order doesn't matter — the trailing \b in the regex disambiguates
+# `/topic` from `/topics` etc.
+ROUTE_PREFIXES = (
+    "static", "neighbourhood", "topic", "topics", "paper", "papers",
+    "map", "city-scale", "data",
+)
+
+
+def normalize_base(base: str) -> str:
+    """Return a base prefix without trailing slash, or '/' to mean no prefix."""
+    if not base or base == "/":
+        return "/"
+    if not base.startswith("/"):
+        base = "/" + base
+    base = base.rstrip("/")
+    return base or "/"
+
+
+def rewrite_paths(content: str, base: str) -> str:
+    """Prepend `base` to every absolute-path URL we know we emit.
+
+    Matches `/<known-prefix>...` immediately preceded by `"`, `'`, `=`, or
+    `(`, which covers: HTML attribute values (href, src), CSS url(), and
+    inline-JS string literals. Also handles bare `href="/"` and `src="/"`.
+    """
+    if base == "/":
+        return content
+    pattern = re.compile(
+        r"(?<=[\"'=(])/(" + "|".join(ROUTE_PREFIXES) + r")\b"
+    )
+    content = pattern.sub(lambda m: f"{base}/{m.group(1)}", content)
+    # Bare-root href/src — keep limited to those attributes so we don't
+    # rewrite stray "/" in JS / CSS string literals.
+    content = re.sub(r'(href|src)="/"', rf'\1="{base}/"', content)
+    return content
+
+
+def rewrite_output_tree(out_root: Path, base: str) -> int:
+    """Apply rewrite_paths to every HTML/CSS file under docs/. Returns count."""
+    if base == "/":
+        return 0
+    n = 0
+    for p in out_root.rglob("*"):
+        if not p.is_file() or p.suffix not in (".html", ".css"):
+            continue
+        text = p.read_text(encoding="utf-8")
+        rewritten = rewrite_paths(text, base)
+        if rewritten != text:
+            p.write_text(rewritten, encoding="utf-8")
+            n += 1
+    return n
+
+
 def copy_static() -> int:
     dst = OUT / "static"
     if dst.exists():
@@ -604,6 +663,21 @@ def copy_static() -> int:
 # ---------------------------------------------------------------------------
 
 def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Render the Helsinki Research Index to docs/ for static hosting."
+    )
+    parser.add_argument(
+        "--base-url",
+        default="/",
+        help=(
+            "Subpath under which the site will be hosted (e.g. /helsinki-papers/). "
+            "Default '/' (site lives at the host root). Rewrites every absolute "
+            "URL we emit to be prefixed with this path."
+        ),
+    )
+    args = parser.parse_args()
+    base = normalize_base(args.base_url)
+
     t0 = time.time()
     OUT.mkdir(parents=True, exist_ok=True)
     env = make_env()
@@ -635,6 +709,11 @@ def main() -> int:
     if cname:
         (OUT / "CNAME").write_text(cname.strip() + "\n")
         print(f"  CNAME written: {cname.strip()}")
+
+    # Base-URL rewrite, after everything is on disk.
+    if base != "/":
+        n_rewritten = rewrite_output_tree(OUT, base)
+        print(f"  rewritten with base {base}/: {n_rewritten} files")
 
     pages_total = n_index + n_nbhd + n_papers + n_topic_pages + n_map + n_404
     elapsed = time.time() - t0
