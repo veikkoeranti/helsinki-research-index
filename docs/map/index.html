@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Map — Helsinki Research Index</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Geist:wght@300..700&display=swap">
+  <link rel="stylesheet" href="/static/css/app.css">
+  
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell">
+      <a href="/" class="site-title">Helsinki <em>Research Index</em></a>
+      <nav class="site-nav">
+        <a href="/">Neighbourhoods</a>
+        <a href="/map">Map</a>
+        <a href="/topics">Topics</a>
+        <a href="/city-scale">City-scale</a>
+        <a href="/papers">All papers</a>
+      </nav>
+    </div>
+  </header>
+  <main class="shell">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<header class="article-header">
+  <p class="eyebrow">map view</p>
+  <h1>Helsinki <em>by neighbourhood</em></h1>
+  <p class="lede">
+    Choropleth across the 60 kaupunginosat (darker = more papers).
+    The 14 quarters appear as pins on top because their polygons aren't
+    in the boundary dataset.
+    
+      <a href="/map?show_empty=1">show empty quarters too</a>
+    
+  </p>
+</header>
+
+<div id="map" style="height: 70vh; margin-bottom: 1rem; border: 1px solid var(--color-rule, #ddd);"></div>
+<p style="color: var(--color-ink-muted); font-size: 0.85em;">
+  Boundary data: Helsinki Region Infoshare — Helsingin kaupunginosajako (CC BY 4.0).
+</p>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  (function () {
+    var counts = {"01": 5, "02": 2, "03": 0, "04": 12, "05": 5, "06": 1, "07": 2, "08": 3, "09": 1, "10": 6, "10.kalasatama": 20, "11": 34, "12": 0, "13": 1, "14": 0, "15": 8, "16": 0, "17": 5, "18": 1, "19": 0, "20": 0, "20.hernesaari": 0, "20.j\u00e4tk\u00e4saari": 10, "20.ruoholahti": 2, "21": 0, "22": 5, "23": 1, "23.arabianranta": 14, "24": 12, "25": 6, "26": 2, "27": 0, "28": 4, "29": 5, "30": 9, "31": 4, "32": 1, "33": 1, "34": 2, "35": 0, "36": 7, "37": 0, "38": 9, "38.pihlajam\u00e4ki": 3, "39": 0, "40": 0, "41": 0, "41.jakom\u00e4ki": 1, "42": 2, "43": 11, "43.roihuvuori": 1, "44": 2, "45": 0, "45.it\u00e4keskus": 6, "45.myllypuro": 8, "46": 3, "47": 2, "47.kontula": 15, "47.mellunm\u00e4ki": 3, "48": 2, "49": 3, "50": 1, "51": 1, "52": 23, "53": 0, "54": 22, "54.aurinkolahti": 2, "54.meri-rastila": 5, "55": 4, "56": 0, "57": 0, "58": 0, "59": 0, "60": 0};
+    var quarterPoints = [{"id": "10.kalasatama", "lat": 60.1872, "lng": 24.9778, "name_fi": "Kalasatama", "paper_count": 20}, {"id": "20.j\u00e4tk\u00e4saari", "lat": 60.1583, "lng": 24.9194, "name_fi": "J\u00e4tk\u00e4saari", "paper_count": 10}, {"id": "20.ruoholahti", "lat": 60.1639, "lng": 24.9156, "name_fi": "Ruoholahti", "paper_count": 2}, {"id": "23.arabianranta", "lat": 60.2069, "lng": 24.9764, "name_fi": "Arabianranta", "paper_count": 14}, {"id": "38.pihlajam\u00e4ki", "lat": 60.2406, "lng": 24.9931, "name_fi": "Pihlajam\u00e4ki", "paper_count": 3}, {"id": "41.jakom\u00e4ki", "lat": 60.2814, "lng": 25.0683, "name_fi": "Jakom\u00e4ki", "paper_count": 1}, {"id": "43.roihuvuori", "lat": 60.1992, "lng": 25.0625, "name_fi": "Roihuvuori", "paper_count": 1}, {"id": "45.it\u00e4keskus", "lat": 60.2103, "lng": 25.0817, "name_fi": "It\u00e4keskus", "paper_count": 6}, {"id": "45.myllypuro", "lat": 60.2228, "lng": 25.0703, "name_fi": "Myllypuro", "paper_count": 8}, {"id": "47.kontula", "lat": 60.2328, "lng": 25.0858, "name_fi": "Kontula", "paper_count": 15}, {"id": "47.mellunm\u00e4ki", "lat": 60.2378, "lng": 25.1175, "name_fi": "Mellunm\u00e4ki", "paper_count": 3}, {"id": "54.aurinkolahti", "lat": 60.2003, "lng": 25.1556, "name_fi": "Aurinkolahti", "paper_count": 2}, {"id": "54.meri-rastila", "lat": 60.2078, "lng": 25.1206, "name_fi": "Meri-Rastila", "paper_count": 5}];
+    var rootStyle = getComputedStyle(document.documentElement);
+    var accent = rootStyle.getPropertyValue('--color-accent').trim() || '#00256b';
+    var accentHot = rootStyle.getPropertyValue('--color-accent-hot').trim() || '#c1432a';
+
+    var map = L.map('map').setView([60.192, 24.945], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap',
+      maxZoom: 19
+    }).addTo(map);
+
+    var maxCount = 0;
+    Object.values(counts).forEach(function (c) { if (c > maxCount) maxCount = c; });
+    var denom = Math.sqrt(maxCount) || 1;
+
+    function opacityForCount(c) {
+      if (!c) return 0.05;
+      return Math.min(0.85, 0.1 + (Math.sqrt(c) / denom) * 0.75);
+    }
+
+    function addQuarterPins() {
+      quarterPoints.forEach(function (p) {
+        var radius = 4 + Math.sqrt(p.paper_count);
+        var marker = L.circleMarker([p.lat, p.lng], {
+          radius: radius,
+          color: accentHot,
+          weight: 1.5,
+          fillColor: accentHot,
+          fillOpacity: p.paper_count > 0 ? 0.75 : 0.25
+        }).addTo(map);
+        marker.bindTooltip(
+          '<strong>' + p.name_fi + '</strong> <em style="color:#888">(quarter)</em><br>' +
+          p.paper_count + ' paper' + (p.paper_count === 1 ? '' : 's')
+        );
+        marker.bindPopup(
+          '<strong>' + p.name_fi + '</strong> <em style="color:#888">(quarter)</em><br>' +
+          p.paper_count + ' paper' + (p.paper_count === 1 ? '' : 's') + '<br>' +
+          '<a href="/neighbourhood/' + encodeURIComponent(p.id) + '">open detail page →</a>'
+        );
+        marker.bringToFront();
+      });
+    }
+
+    fetch('/static/geo/helsinki_neighbourhoods.geojson')
+      .then(function (r) { return r.json(); })
+      .then(function (gj) {
+        L.geoJSON(gj, {
+          style: function (feat) {
+            var c = counts[feat.properties.id] || 0;
+            return {
+              color: accent,
+              weight: 1,
+              fillColor: accent,
+              fillOpacity: opacityForCount(c)
+            };
+          },
+          onEachFeature: function (feat, layer) {
+            var id = feat.properties.id;
+            var name = feat.properties.name_fi;
+            var c = counts[id] || 0;
+            layer.bindTooltip(
+              '<strong>' + name + '</strong><br>' +
+              c + ' paper' + (c === 1 ? '' : 's'),
+              { sticky: true }
+            );
+            layer.on('mouseover', function () {
+              layer.setStyle({ weight: 2.5 });
+            });
+            layer.on('mouseout', function () {
+              layer.setStyle({ weight: 1 });
+            });
+            layer.on('click', function () {
+              window.location.href = '/neighbourhood/' + encodeURIComponent(id);
+            });
+          }
+        }).addTo(map);
+
+        addQuarterPins();
+      });
+  })();
+</script>
+</main>
+</body>
+</html>

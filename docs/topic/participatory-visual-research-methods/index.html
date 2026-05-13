@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Participatory Visual Research Methods — Helsinki Research Index</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Geist:wght@300..700&display=swap">
+  <link rel="stylesheet" href="/static/css/app.css">
+  
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell">
+      <a href="/" class="site-title">Helsinki <em>Research Index</em></a>
+      <nav class="site-nav">
+        <a href="/">Neighbourhoods</a>
+        <a href="/map">Map</a>
+        <a href="/topics">Topics</a>
+        <a href="/city-scale">City-scale</a>
+        <a href="/papers">All papers</a>
+      </nav>
+    </div>
+  </header>
+  <main class="shell">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+
+
+
+
+
+
+<header class="article-header">
+  <p class="eyebrow"><a href="/topics">← all topics</a></p>
+  <h1>Participatory Visual Research Methods</h1>
+  <p class="lede">
+    4 Helsinki papers under this OpenAlex topic.
+    
+  </p>
+</header>
+
+
+<section style="display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 2rem; margin-bottom: 1.5rem;">
+  <div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  <p class="eyebrow">papers per year</p>
+  <svg viewBox="0 0 1000 100" preserveAspectRatio="none"
+       style="width: 100%; height: 90px; display: block;"
+       role="img" aria-label="Histogram of papers per year">
+    <line x1="0" y1="78" x2="1000" y2="78"
+          stroke="var(--color-rule)" stroke-width="1"
+          vector-effect="non-scaling-stroke"/>
+    
+      
+      
+      
+      
+        <title>2016 — 1 paper</title>
+        <rect x="75.0"
+              y="52.0"
+              width="350.0"
+              height="26.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2017 — 3 papers</title>
+        <rect x="575.0"
+              y="0.0"
+              width="350.0"
+              height="78.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+    <text x="0" y="98"
+          font-family="var(--font-ui)" font-size="11"
+          fill="var(--color-ink-muted)" text-anchor="start">2016</text>
+    
+    <text x="500.0" y="98"
+          font-family="var(--font-ui)" font-size="11"
+          fill="var(--color-ink-muted)" text-anchor="middle">2016</text>
+    <text x="1000" y="98"
+          font-family="var(--font-ui)" font-size="11"
+          fill="var(--color-ink-muted)" text-anchor="end">2017</text>
+    
+  </svg>
+  </div>
+  
+  <div>
+    <p class="eyebrow">geographic distribution</p>
+    <div id="topic-map" style="height: 280px; border: 1px solid var(--color-rule, #ddd);"></div>
+  </div>
+  
+</section>
+
+
+
+
+
+<section style="margin-bottom: 1.75rem; max-width: 32rem;">
+  
+    
+  <p class="eyebrow">most active authors</p>
+  
+    
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Hanna Stenhammar</div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: 100.0%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">1</div>
+  </div>
+  
+    
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Pekka Kantonen</div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: 100.0%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">1</div>
+  </div>
+  
+    
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Saara Pyykkö</div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: 100.0%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">1</div>
+  </div>
+  
+    
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Дарья Морозова</div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: 100.0%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">1</div>
+  </div>
+  
+  
+</section>
+
+
+
+<table class="matrix">
+  <thead>
+    <tr>
+      <th>Paper</th>
+      <th>Author</th>
+      <th style="text-align: right;">Year</th>
+      <th>Journal</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W2728733985">Generational filming : a video diary as experimental and participatory research</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          The subject matter of this research is the method with which I have approached my video archives. I have developed it together with Lea Kantonen, and it is a method of filming, watching and commenting that we have named Generational Filming. We watc…
+          <strong><a href="https://openalex.org/W2728733985" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <span title="no DOI on file">journal</span>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Pekka Kantonen</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2017</td>
+      <td style="color: var(--color-ink-muted);">Taju (University of the Arts Helsinki)</td>
+    </tr>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W2778951632">Pictures of Illness: Photo Elicitation for Studying Patient Experience at Children’s Hospital</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          Healthcare organizations have recently started to collect information about the experiences of their patients. The current feedback methods have been developed mainly for adult participants and the organizations are lacking appropriate instruments f…
+          <strong><a href="https://openalex.org/W2778951632" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <span title="no DOI on file">journal</span>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Hanna Stenhammar</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2017</td>
+      <td style="color: var(--color-ink-muted);">Aaltodoc (Aalto University)</td>
+    </tr>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W2905372191">«Следуя устойчивой моде»: изучение практик финских дизайнеров одежды с помощью исследовательского фильма</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          This article discusses the use of a research-based film in social research as a strategy, method for data analysis and a form of presentation of findings using the film “Take it slow! Sustainable fashion for local community in Kallio, Helsinki” as a…
+          <strong><a href="https://openalex.org/W2905372191" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <span title="no DOI on file">journal</span>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Дарья Морозова</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2017</td>
+      <td style="color: var(--color-ink-muted);">CyberLeninK (CyberLeninka)</td>
+    </tr>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W2621685469">Colours of a Neighbourhood: Methodological Questions and Challenges</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          This paper addresses methodological questions that arise from large-scale architectural colour research. The paper will discuss some preliminary findings of my on-going PhD. The PhD project represents a practice-led study concerning the colour plann…
+          <strong><a href="https://openalex.org/W2621685469" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <span title="no DOI on file">journal</span>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Saara Pyykkö</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2016</td>
+      <td style="color: var(--color-ink-muted);">Aaltodoc (Aalto University)</td>
+    </tr>
+    
+  </tbody>
+</table>
+
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  (function () {
+    var points = [{"id": "54.aurinkolahti", "lat": 60.2003, "lng": 25.1556, "n_papers": 1, "name_fi": "Aurinkolahti"}, {"id": "15", "lat": 60.1908, "lng": 24.9089, "n_papers": 1, "name_fi": "Meilahti"}, {"id": "11", "lat": 60.1842, "lng": 24.9508, "n_papers": 1, "name_fi": "Kallio"}];
+    var topicParam = "";
+    var accent = getComputedStyle(document.documentElement)
+      .getPropertyValue('--color-accent').trim() || '#00256b';
+
+    var map = L.map('topic-map', { scrollWheelZoom: false })
+      .setView([60.192, 24.945], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap',
+      maxZoom: 19
+    }).addTo(map);
+
+    points.forEach(function (p) {
+      var radius = 4 + Math.sqrt(p.n_papers);
+      var marker = L.circleMarker([p.lat, p.lng], {
+        radius: radius,
+        color: accent,
+        weight: 1,
+        fillColor: accent,
+        fillOpacity: 0.65
+      }).addTo(map);
+      marker.bindTooltip(
+        '<strong>' + p.name_fi + '</strong><br>' +
+        p.n_papers + ' paper' + (p.n_papers === 1 ? '' : 's') + ' in this topic'
+      );
+      marker.bindPopup(
+        '<strong>' + p.name_fi + '</strong><br>' +
+        p.n_papers + ' paper' + (p.n_papers === 1 ? '' : 's') + ' in this topic<br>' +
+        '<a href="/neighbourhood/' + encodeURIComponent(p.id) + topicParam + '">open neighbourhood →</a>'
+      );
+    });
+  })();
+</script>
+
+</main>
+</body>
+</html>

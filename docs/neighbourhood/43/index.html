@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Herttoniemi — Helsinki Research Index</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Geist:wght@300..700&display=swap">
+  <link rel="stylesheet" href="/static/css/app.css">
+  
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell">
+      <a href="/" class="site-title">Helsinki <em>Research Index</em></a>
+      <nav class="site-nav">
+        <a href="/">Neighbourhoods</a>
+        <a href="/map">Map</a>
+        <a href="/topics">Topics</a>
+        <a href="/city-scale">City-scale</a>
+        <a href="/papers">All papers</a>
+      </nav>
+    </div>
+  </header>
+  <main class="shell">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+
+
+
+
+
+
+<header class="article-header">
+  <p class="eyebrow">
+    southeastern
+  </p>
+  <h1>Herttoniemi <em>/ Hertonäs</em></h1>
+  <p class="lede">
+    11 papers mapped to this area.
+    
+  </p>
+  
+</header>
+
+<div id="map" style="height: 280px; margin-bottom: 2rem; border: 1px solid var(--color-rule, #ddd);"></div>
+
+
+<section style="display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 2rem; margin-bottom: 1.5rem;">
+  <div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  <p class="eyebrow">papers per year</p>
+  <svg viewBox="0 0 1000 100" preserveAspectRatio="none"
+       style="width: 100%; height: 90px; display: block;"
+       role="img" aria-label="Histogram of papers per year">
+    <line x1="0" y1="78" x2="1000" y2="78"
+          stroke="var(--color-rule)" stroke-width="1"
+          vector-effect="non-scaling-stroke"/>
+    
+      
+      
+      
+      
+        <title>2006 — 1 paper</title>
+        <rect x="7.5"
+              y="52.0"
+              width="35.0"
+              height="26.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2007 — 0 papers</title>
+        <rect x="57.5"
+              y="78.0"
+              width="35.0"
+              height="0.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2008 — 0 papers</title>
+        <rect x="107.5"
+              y="78.0"
+              width="35.0"
+              height="0.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2009 — 0 papers</title>
+        <rect x="157.5"
+              y="78.0"
+              width="35.0"
+              height="0.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2010 — 0 papers</title>
+        <rect x="207.5"
+              y="78.0"
+              width="35.0"
+              height="0.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2011 — 1 paper</title>
+        <rect x="257.5"
+              y="52.0"
+              width="35.0"
+              height="26.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2012 — 0 papers</title>
+        <rect x="307.5"
+              y="78.0"
+              width="35.0"
+              height="0.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2013 — 0 papers</title>
+        <rect x="357.5"
+              y="78.0"
+              width="35.0"
+              height="0.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2014 — 0 papers</title>
+        <rect x="407.5"
+              y="78.0"
+              width="35.0"
+              height="0.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2015 — 1 paper</title>
+        <rect x="457.5"
+              y="52.0"
+              width="35.0"
+              height="26.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2016 — 1 paper</title>
+        <rect x="507.5"
+              y="52.0"
+              width="35.0"
+              height="26.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2017 — 1 paper</title>
+        <rect x="557.5"
+              y="52.0"
+              width="35.0"
+              height="26.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2018 — 0 papers</title>
+        <rect x="607.5"
+              y="78.0"
+              width="35.0"
+              height="0.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2019 — 1 paper</title>
+        <rect x="657.5"
+              y="52.0"
+              width="35.0"
+              height="26.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2020 — 1 paper</title>
+        <rect x="707.5"
+              y="52.0"
+              width="35.0"
+              height="26.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2021 — 0 papers</title>
+        <rect x="757.5"
+              y="78.0"
+              width="35.0"
+              height="0.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2022 — 0 papers</title>
+        <rect x="807.5"
+              y="78.0"
+              width="35.0"
+              height="0.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2023 — 0 papers</title>
+        <rect x="857.5"
+              y="78.0"
+              width="35.0"
+              height="0.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2024 — 1 paper</title>
+        <rect x="907.5"
+              y="52.0"
+              width="35.0"
+              height="26.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+      
+      
+      
+      
+        <title>2025 — 3 papers</title>
+        <rect x="957.5"
+              y="0.0"
+              width="35.0"
+              height="78.0"
+              fill="var(--color-accent)"
+              fill-opacity="1"/>
+      
+    
+    <text x="0" y="98"
+          font-family="var(--font-ui)" font-size="11"
+          fill="var(--color-ink-muted)" text-anchor="start">2006</text>
+    
+    <text x="500.0" y="98"
+          font-family="var(--font-ui)" font-size="11"
+          fill="var(--color-ink-muted)" text-anchor="middle">2015</text>
+    <text x="1000" y="98"
+          font-family="var(--font-ui)" font-size="11"
+          fill="var(--color-ink-muted)" text-anchor="end">2025</text>
+    
+  </svg>
+  </div>
+  <div>
+    
+  <p class="eyebrow">most active authors</p>
+  
+    
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Iida Lehtonen</div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: 100.0%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">1</div>
+  </div>
+  
+    
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Inka Lappalainen</div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: 100.0%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">1</div>
+  </div>
+  
+    
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Jenni Kuoppa</div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: 100.0%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">1</div>
+  </div>
+  
+    
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Jouko Kunnas</div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: 100.0%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">1</div>
+  </div>
+  
+    
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Juhana Rantavuori</div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: 100.0%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">1</div>
+  </div>
+  
+  </div>
+</section>
+
+
+
+
+<section style="display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 2rem; margin-bottom: 1.75rem;">
+  
+  <div>
+    <p class="eyebrow">dominant concepts</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;">
+      
+        
+        
+        <span class="tag" title="filters are disabled in the static build">
+          cultural-heritage
+          <span style="font-variant-numeric: tabular-nums; opacity: 0.7;">· 2</span>
+        </span>
+        
+      
+        
+        
+        <span class="tag" title="filters are disabled in the static build">
+          production-of-space
+          <span style="font-variant-numeric: tabular-nums; opacity: 0.7;">· 2</span>
+        </span>
+        
+      
+        
+        
+        <span class="tag" title="filters are disabled in the static build">
+          urban-change
+          <span style="font-variant-numeric: tabular-nums; opacity: 0.7;">· 2</span>
+        </span>
+        
+      
+        
+        
+        <span class="tag" title="filters are disabled in the static build">
+          modernist-architecture
+          <span style="font-variant-numeric: tabular-nums; opacity: 0.7;">· 2</span>
+        </span>
+        
+      
+        
+        
+        <span class="tag" title="filters are disabled in the static build">
+          sustainability
+          <span style="font-variant-numeric: tabular-nums; opacity: 0.7;">· 2</span>
+        </span>
+        
+      
+        
+        
+        <span class="tag" title="filters are disabled in the static build">
+          planning-narratives
+          <span style="font-variant-numeric: tabular-nums; opacity: 0.7;">· 2</span>
+        </span>
+        
+      
+        
+        
+        <span class="tag" title="filters are disabled in the static build">
+          participatory-planning
+          <span style="font-variant-numeric: tabular-nums; opacity: 0.7;">· 1</span>
+        </span>
+        
+      
+        
+        
+        <span class="tag" title="filters are disabled in the static build">
+          self-organization
+          <span style="font-variant-numeric: tabular-nums; opacity: 0.7;">· 1</span>
+        </span>
+        
+      
+      
+    </div>
+  </div>
+  
+
+  
+    
+  <div>
+    <p class="eyebrow">also discussed alongside</p>
+    
+      
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><a href="/neighbourhood/45.itäkeskus">Itäkeskus</a></div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: 100.0%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">2</div>
+  </div>
+    
+      
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><a href="/neighbourhood/42">Kulosaari</a></div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: 50.0%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">1</div>
+  </div>
+    
+      
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><a href="/neighbourhood/10">Sörnäinen</a></div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: 50.0%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">1</div>
+  </div>
+    
+      
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 4rem 2.5rem;
+              align-items: center; gap: 0.5rem; margin: 0.3rem 0;
+              font-family: var(--font-ui); font-size: 0.9em;">
+    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><a href="/neighbourhood/54">Vuosaari</a></div>
+    <div style="height: 6px; background: var(--color-rule); position: relative;">
+      <div style="position: absolute; left: 0; top: 0; bottom: 0;
+                  width: 50.0%; background: var(--color-accent);"></div>
+    </div>
+    <div style="text-align: right; font-variant-numeric: tabular-nums;
+                color: var(--color-ink-muted);">1</div>
+  </div>
+    
+  </div>
+  
+</section>
+
+
+
+<table class="matrix">
+  <thead>
+    <tr>
+      <th>Paper</th>
+      <th>Author</th>
+      <th style="text-align: right;">Year</th>
+      <th>OpenAlex topic</th>
+      <th>Journal</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W4411268585">A Long Cycle of Expansive Learning in a Food Cooperative: A Multi-Lens Analysis</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          This study presents a longitudinal, multi-lens analysis of expansive learning within the Herttoniemi Food Cooperative, a social movement focused on sustainable food production located in Helsinki.We employ the theory of expansive learning to analyze…
+          <strong><a href="https://openalex.org/W4411268585" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <strong><a href="https://doi.org/10.22318/icls2025.706066" target="_blank" rel="noopener">journal</a></strong>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Juhana Rantavuori</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2025</td>
+      <td style="color: var(--color-ink-muted);">Organizational Learning and Leadership</td>
+      <td style="color: var(--color-ink-muted);">Proceedings.</td>
+    </tr>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W4415602948">Kävelykierros kaupunkitilan (alemmissa) kerroksissa</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          Miten arjen ympäristön arkkitehtuurin ja kulttuurisen merkityksen tutkimusta voidaan toteuttaa kollektiivisesti? Voiko kävelykierros ja kerrostumien etsiminen olla aktivismia? Kokeilimme kuinka Helsingin metron vanhimpien asemien muutosten ja purkam…
+          <strong><a href="https://openalex.org/W4415602948" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <strong><a href="https://doi.org/10.33357/ys.156787" target="_blank" rel="noopener">journal</a></strong>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Karita Rytivaara</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2025</td>
+      <td style="color: var(--color-ink-muted);">Architecture, Design, and Social History</td>
+      <td style="color: var(--color-ink-muted);">Yhdyskuntasuunnittelu</td>
+    </tr>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W7132984426">Näkökulmia sakraalirakennusten käyttötarkoitusten muutoksiin: Herttoniemen ja Munkkivuoren kirkot</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          Tässä kandidaatintyössä käsitellään Suomen evankelisluterilaisen kirkon sakraalirakennuksia, niihin kohdistuvaa purku-uhkaa sekä niiden mahdollisuuksia uudelleenkäyttöön. Suomen evankelisluterilainen kirkko on muutospaineiden alla, joka johtuu pääas…
+          <strong><a href="https://openalex.org/W7132984426" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <span title="no DOI on file">journal</span>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Sini Hyttinen</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2025</td>
+      <td style="color: var(--color-ink-muted);">Historical Legal Studies and Society</td>
+      <td style="color: var(--color-ink-muted);">Trepo - Institutional Repository of Tampere University</td>
+    </tr>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W4402732553">Children&#39;s planned and unplanned places of play and encounter in West Herttoniemi, Helsinki</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          This chapter explores the child friendliness of West Herttoniemi, a suburban neighbourhood in Helsinki, Finland, built in the 1950s. The analysis builds on mapping of different environments for play and participatory observation to explore how child…
+          <strong><a href="https://openalex.org/W4402732553" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <strong><a href="https://doi.org/10.4324/9781003456223-9" target="_blank" rel="noopener">journal</a></strong>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Veera Moll</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2024</td>
+      <td style="color: var(--color-ink-muted);">Children&#39;s Rights and Participation</td>
+      <td style="color: var(--color-ink-muted);">—</td>
+    </tr>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W3126166274">Ranko Radovic’s approach to the planning and design of public spaces through projects for cities in Finland and Serbia</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          Ranko Radovic (1935-2005) was one of Serbia?s most notable architects, urbanists, and professors, with a prominent influence on European scholarly discussions on planning urban centers and public spaces, which have come to light not only through his…
+          <strong><a href="https://openalex.org/W3126166274" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <strong><a href="https://doi.org/10.2298/spat2044029l" target="_blank" rel="noopener">journal</a></strong>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Stefanie Leontiadis</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2020</td>
+      <td style="color: var(--color-ink-muted);">Urbanization and City Planning</td>
+      <td style="color: var(--color-ink-muted);">Spatium</td>
+    </tr>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W2972972329">Managing urban complexity - Participatory planning, self-organization and co-production of urban space</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          Contemporary urban planning theories and practices are still dealing with the linear procedures and institutional sense-making. However, a new planning paradigm is emerging.The actor-based perspective acknowledges self-organizing urban development, …
+          <strong><a href="https://openalex.org/W2972972329" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <span title="no DOI on file">journal</span>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Sirkku Wallin</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2019</td>
+      <td style="color: var(--color-ink-muted);">Innovative Approaches in Technology and Social Development</td>
+      <td style="color: var(--color-ink-muted);">Aaltodoc (Aalto University)</td>
+    </tr>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W2734855501">Kivinokka – a cultural landscape in transition</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          This master’s thesis studies Kivinokka as an urban landscape where cultural heritage and meanings have cumulated over time. Kivinokka is a 68-hectare large cape in the neighbourhoods of Herttoniemi and Kulosaari in southeastern Helsinki. It has a hi…
+          <strong><a href="https://openalex.org/W2734855501" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <span title="no DOI on file">journal</span>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Inka Lappalainen</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2017</td>
+      <td style="color: var(--color-ink-muted);">Research in Social Sciences</td>
+      <td style="color: var(--color-ink-muted);">Aaltodoc (Aalto University)</td>
+    </tr>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W2296225677">Kävelyn lupaukset kaupungissa. Kolme tapausta kävelijöiden arjesta ja kokemuksista sekä kaupunkisuunnittelusta</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          Käveltävyys on viime vuosina noussut yhä voimakkaammin esiin keskusteluissa siitä, kuinka kaupunkeja voitaisiin kehittää kestävämmiksi, terveellisemmiksi ja viihtyisämmiksi paikoiksi elää. Käveleminen voi tuottaa kaupunkiin elävyyttä, ihmisten välis…
+          <strong><a href="https://openalex.org/W2296225677" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <span title="no DOI on file">journal</span>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Jenni Kuoppa</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2016</td>
+      <td style="color: var(--color-ink-muted);">Research in Social Sciences</td>
+      <td style="color: var(--color-ink-muted);">Tampere University Institutional Repository (Tampere University)</td>
+    </tr>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W2258036852">Tavoitteiden asettaminen nuoren kanssa : väline tavoitteiden asettamiseen Vamoksen työntekijöille ja nuorille</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          Tämä opinnäytetyö toteutui kehittämistyönä, jonka ensisijainen tavoite oli kehittää väline tavoitteiden asettamiseen Vamoksen Herttoniemen toimipisteeseen. Vamos on 16−29-vuotiaille nuorille suunnattu matalan kynnyksen palvelu, joka tarjoaa tukea nu…
+          <strong><a href="https://openalex.org/W2258036852" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <span title="no DOI on file">journal</span>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Iida Lehtonen</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2015</td>
+      <td style="color: var(--color-ink-muted);">Research in Social Sciences</td>
+      <td style="color: var(--color-ink-muted);">Theseus (Ammattikorkeakoulujen)</td>
+    </tr>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W865181288">TYÖKÄYTÄNTÖJÄ KEHITTÄMÄSSÄ : vastaanottotiimikokeilu lastensuojelun avohuollossa</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          TIIVISTELMÄ&amp;#13;\nOksanen Tiina,&amp;#13;\nTyökäytäntöjä kehittämässä. Vastaanottotiimikokeilu lastensuojelun avohuollossa. Helsinki, kevät 2011, 117 sivua, 2 liitettä.&amp;#13;\nDiakonia- ammattikorkeakoulu,&amp;#13;\nDiak Etelä, Helsingin yksikkö&amp;#13;\nTervey…
+          <strong><a href="https://openalex.org/W865181288" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <span title="no DOI on file">journal</span>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Tiina Oksanen</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2011</td>
+      <td style="color: var(--color-ink-muted);">Research in Social Sciences</td>
+      <td style="color: var(--color-ink-muted);">Theseus (Ammattikorkeakoulujen)</td>
+    </tr>
+    
+    
+    <tr>
+      <td class="row-head">
+        <a href="/paper/W789660374">Home alley. Mobility choices in urban garden city neighbourhoods</a>
+        
+        <div style="color: var(--color-ink-muted); font-size: 0.9em; margin-top: 0.25rem;">
+          The aim of the research was to explore the residential and mobility choices and preferences of the people living in urban garden city neighbourhoods. Additionally, the research examined the conditions, under which the residents would be willing to c…
+          <strong><a href="https://openalex.org/W789660374" target="_blank" rel="noopener">openalex</a></strong>
+          ·
+          
+            <span title="no DOI on file">journal</span>
+          
+        </div>
+        
+      </td>
+      <td style="color: var(--color-ink-muted);">Jouko Kunnas</td>
+      <td style="text-align: right; font-variant-numeric: tabular-nums;">2006</td>
+      <td style="color: var(--color-ink-muted);">Urban Transport and Accessibility</td>
+      <td style="color: var(--color-ink-muted);">Liikenneministeriön julkaisuja</td>
+    </tr>
+    
+  </tbody>
+</table>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  (function () {
+    var map = L.map('map', { scrollWheelZoom: false }).setView([60.1939, 25.0297], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap',
+      maxZoom: 19
+    }).addTo(map);
+    L.marker([60.1939, 25.0297]).addTo(map)
+      .bindPopup("Herttoniemi");
+  })();
+</script>
+</main>
+</body>
+</html>

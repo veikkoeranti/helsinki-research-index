@@ -1,0 +1,373 @@
+[
+  {
+    "id": "11",
+    "name_fi": "Kallio",
+    "lat": 60.1842,
+    "lng": 24.9508,
+    "paper_count": 34
+  },
+  {
+    "id": "52",
+    "name_fi": "Suomenlinna",
+    "lat": 60.1453,
+    "lng": 24.9881,
+    "paper_count": 23
+  },
+  {
+    "id": "54",
+    "name_fi": "Vuosaari",
+    "lat": 60.2092,
+    "lng": 25.1442,
+    "paper_count": 22
+  },
+  {
+    "id": "10.kalasatama",
+    "name_fi": "Kalasatama",
+    "lat": 60.1872,
+    "lng": 24.9778,
+    "paper_count": 20
+  },
+  {
+    "id": "47.kontula",
+    "name_fi": "Kontula",
+    "lat": 60.2328,
+    "lng": 25.0858,
+    "paper_count": 15
+  },
+  {
+    "id": "23.arabianranta",
+    "name_fi": "Arabianranta",
+    "lat": 60.2069,
+    "lng": 24.9764,
+    "paper_count": 14
+  },
+  {
+    "id": "04",
+    "name_fi": "Kamppi",
+    "lat": 60.1675,
+    "lng": 24.9319,
+    "paper_count": 12
+  },
+  {
+    "id": "24",
+    "name_fi": "Kumpula",
+    "lat": 60.2078,
+    "lng": 24.9603,
+    "paper_count": 12
+  },
+  {
+    "id": "43",
+    "name_fi": "Herttoniemi",
+    "lat": 60.1939,
+    "lng": 25.0297,
+    "paper_count": 11
+  },
+  {
+    "id": "20.jätkäsaari",
+    "name_fi": "Jätkäsaari",
+    "lat": 60.1583,
+    "lng": 24.9194,
+    "paper_count": 10
+  },
+  {
+    "id": "30",
+    "name_fi": "Munkkiniemi",
+    "lat": 60.1972,
+    "lng": 24.8806,
+    "paper_count": 9
+  },
+  {
+    "id": "38",
+    "name_fi": "Malmi",
+    "lat": 60.2503,
+    "lng": 25.0119,
+    "paper_count": 9
+  },
+  {
+    "id": "15",
+    "name_fi": "Meilahti",
+    "lat": 60.1908,
+    "lng": 24.9089,
+    "paper_count": 8
+  },
+  {
+    "id": "45.myllypuro",
+    "name_fi": "Myllypuro",
+    "lat": 60.2228,
+    "lng": 25.0703,
+    "paper_count": 8
+  },
+  {
+    "id": "36",
+    "name_fi": "Viikki",
+    "lat": 60.2272,
+    "lng": 25.0167,
+    "paper_count": 7
+  },
+  {
+    "id": "10",
+    "name_fi": "Sörnäinen",
+    "lat": 60.1858,
+    "lng": 24.9608,
+    "paper_count": 6
+  },
+  {
+    "id": "25",
+    "name_fi": "Käpylä",
+    "lat": 60.2161,
+    "lng": 24.9489,
+    "paper_count": 6
+  },
+  {
+    "id": "45.itäkeskus",
+    "name_fi": "Itäkeskus",
+    "lat": 60.2103,
+    "lng": 25.0817,
+    "paper_count": 6
+  },
+  {
+    "id": "01",
+    "name_fi": "Kruununhaka",
+    "lat": 60.1722,
+    "lng": 24.9601,
+    "paper_count": 5
+  },
+  {
+    "id": "05",
+    "name_fi": "Punavuori",
+    "lat": 60.1614,
+    "lng": 24.9389,
+    "paper_count": 5
+  },
+  {
+    "id": "17",
+    "name_fi": "Pasila",
+    "lat": 60.1986,
+    "lng": 24.9344,
+    "paper_count": 5
+  },
+  {
+    "id": "22",
+    "name_fi": "Vallila",
+    "lat": 60.1956,
+    "lng": 24.9528,
+    "paper_count": 5
+  },
+  {
+    "id": "29",
+    "name_fi": "Haaga",
+    "lat": 60.22,
+    "lng": 24.9,
+    "paper_count": 5
+  },
+  {
+    "id": "54.meri-rastila",
+    "name_fi": "Meri-Rastila",
+    "lat": 60.2078,
+    "lng": 25.1206,
+    "paper_count": 5
+  },
+  {
+    "id": "28",
+    "name_fi": "Oulunkylä",
+    "lat": 60.2306,
+    "lng": 24.9706,
+    "paper_count": 4
+  },
+  {
+    "id": "31",
+    "name_fi": "Lauttasaari",
+    "lat": 60.1597,
+    "lng": 24.8744,
+    "paper_count": 4
+  },
+  {
+    "id": "55",
+    "name_fi": "Östersundom",
+    "lat": 60.2581,
+    "lng": 25.1797,
+    "paper_count": 4
+  },
+  {
+    "id": "08",
+    "name_fi": "Katajanokka",
+    "lat": 60.1681,
+    "lng": 24.965,
+    "paper_count": 3
+  },
+  {
+    "id": "38.pihlajamäki",
+    "name_fi": "Pihlajamäki",
+    "lat": 60.2406,
+    "lng": 24.9931,
+    "paper_count": 3
+  },
+  {
+    "id": "46",
+    "name_fi": "Pitäjänmäki",
+    "lat": 60.2253,
+    "lng": 24.8581,
+    "paper_count": 3
+  },
+  {
+    "id": "47.mellunmäki",
+    "name_fi": "Mellunmäki",
+    "lat": 60.2378,
+    "lng": 25.1175,
+    "paper_count": 3
+  },
+  {
+    "id": "49",
+    "name_fi": "Laajasalo",
+    "lat": 60.1717,
+    "lng": 25.0428,
+    "paper_count": 3
+  },
+  {
+    "id": "02",
+    "name_fi": "Kluuvi",
+    "lat": 60.17,
+    "lng": 24.9472,
+    "paper_count": 2
+  },
+  {
+    "id": "07",
+    "name_fi": "Ullanlinna",
+    "lat": 60.1583,
+    "lng": 24.9508,
+    "paper_count": 2
+  },
+  {
+    "id": "20.ruoholahti",
+    "name_fi": "Ruoholahti",
+    "lat": 60.1639,
+    "lng": 24.9156,
+    "paper_count": 2
+  },
+  {
+    "id": "26",
+    "name_fi": "Koskela",
+    "lat": 60.2197,
+    "lng": 24.9656,
+    "paper_count": 2
+  },
+  {
+    "id": "34",
+    "name_fi": "Pakila",
+    "lat": 60.2456,
+    "lng": 24.9381,
+    "paper_count": 2
+  },
+  {
+    "id": "42",
+    "name_fi": "Kulosaari",
+    "lat": 60.1869,
+    "lng": 25.0117,
+    "paper_count": 2
+  },
+  {
+    "id": "44",
+    "name_fi": "Tammisalo",
+    "lat": 60.1844,
+    "lng": 25.0578,
+    "paper_count": 2
+  },
+  {
+    "id": "47",
+    "name_fi": "Mellunkylä",
+    "lat": 60.2342,
+    "lng": 25.1031,
+    "paper_count": 2
+  },
+  {
+    "id": "48",
+    "name_fi": "Vartiosaari",
+    "lat": 60.1789,
+    "lng": 25.0928,
+    "paper_count": 2
+  },
+  {
+    "id": "54.aurinkolahti",
+    "name_fi": "Aurinkolahti",
+    "lat": 60.2003,
+    "lng": 25.1556,
+    "paper_count": 2
+  },
+  {
+    "id": "06",
+    "name_fi": "Eira",
+    "lat": 60.1561,
+    "lng": 24.9408,
+    "paper_count": 1
+  },
+  {
+    "id": "09",
+    "name_fi": "Kaivopuisto",
+    "lat": 60.1556,
+    "lng": 24.9583,
+    "paper_count": 1
+  },
+  {
+    "id": "13",
+    "name_fi": "Etu-Töölö",
+    "lat": 60.175,
+    "lng": 24.9258,
+    "paper_count": 1
+  },
+  {
+    "id": "18",
+    "name_fi": "Laakso",
+    "lat": 60.1939,
+    "lng": 24.9183,
+    "paper_count": 1
+  },
+  {
+    "id": "23",
+    "name_fi": "Toukola",
+    "lat": 60.2031,
+    "lng": 24.9678,
+    "paper_count": 1
+  },
+  {
+    "id": "32",
+    "name_fi": "Konala",
+    "lat": 60.2342,
+    "lng": 24.8556,
+    "paper_count": 1
+  },
+  {
+    "id": "33",
+    "name_fi": "Kaarela",
+    "lat": 60.2406,
+    "lng": 24.8714,
+    "paper_count": 1
+  },
+  {
+    "id": "41.jakomäki",
+    "name_fi": "Jakomäki",
+    "lat": 60.2814,
+    "lng": 25.0683,
+    "paper_count": 1
+  },
+  {
+    "id": "43.roihuvuori",
+    "name_fi": "Roihuvuori",
+    "lat": 60.1992,
+    "lng": 25.0625,
+    "paper_count": 1
+  },
+  {
+    "id": "50",
+    "name_fi": "Villinki",
+    "lat": 60.15,
+    "lng": 25.1167,
+    "paper_count": 1
+  },
+  {
+    "id": "51",
+    "name_fi": "Santahamina",
+    "lat": 60.1483,
+    "lng": 25.0392,
+    "paper_count": 1
+  }
+]
